@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: penguin
+  namespace: penguin
+spec:
+  selector:
+    matchLabels:
+      app: penguin
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: penguin
+    spec:
+      containers:
+        - name: penguin-app
+          image: devjk4254/penguin:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: penguin
