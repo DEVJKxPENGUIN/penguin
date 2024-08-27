@@ -1,0 +1,12 @@
+package com.jeongja.penguin.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class WelcomeContorller {
+	
+	public String goWelcome() {
+		return "welcome";
+	}
+
+}

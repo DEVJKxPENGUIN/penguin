@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 생략 -->
+<table border="1">
+	<tr>
+		<td>
+			아이디
+			<span th:text="${vo.id}"></span>
+		</td>	
+	</tr>
+	<tr>
+		<td>
+			상품명
+			<span th:text="${vo.name}"></span>
+		</td>	
+	</tr>
+	<tr>
+		<td>
+			가격
+			<span th:text="${vo.price}"></span>
+		</td>	
+	</tr>
+	<tr>
+		<td>
+			등록일
+			<span th:text="${vo.regDate}"></span>
+		</td>	
+	</tr>
+</table>
+<!-- 생략 -->
+</html>
