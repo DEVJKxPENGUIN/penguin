@@ -10,12 +10,12 @@ spec:
   ingressClassName: nginx
   rules:
   - host: devjk.me
-  - http:
+    http:
       paths:
       - path: /
         pathType: Prefix
-        backend:
+        backend :
           service:
             name: penguin
             port:
-              number: 80
+              number: 8080

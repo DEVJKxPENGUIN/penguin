@@ -5,8 +5,8 @@ metadata:
   namespace: penguin
 spec:
   selector:
-    app.kubernetes.io/name: penguin
+    app: penguin
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: penguin
+      port: 8080
+      targetPort: 8080
