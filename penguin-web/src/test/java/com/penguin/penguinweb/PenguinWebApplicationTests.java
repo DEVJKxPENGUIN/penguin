@@ -1,13 +1,13 @@
-package com.jeongja.penguin;
+package com.penguin.penguinweb;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PenguinApplicationTests {
+class PenguinWebApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+  @Test
+  void contextLoads() {
+  }
 
 }
