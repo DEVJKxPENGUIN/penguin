@@ -14,7 +14,7 @@ spring:
       enabled: always
 
 server:
-  port: ${http.port:8081}
+  port: 8081
   tomcat:
     threads:
       max: 200
