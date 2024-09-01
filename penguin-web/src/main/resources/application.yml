@@ -1,0 +1,43 @@
+spring:
+  profiles:
+    group:
+      "local": "local, common"
+      "prod": "prod, common"
+---
+spring:
+  config:
+    activate:
+      on-profile: "common"
+
+  output:
+    ansi:
+      enabled: always
+
+server:
+  port: ${http.port:8081}
+  tomcat:
+    threads:
+      max: 200
+    maxConnections: 10000
+    acceptCount: 100
+    maxKeepAliveRequests: 100
+    connectionTimeout: 60000
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  devtools:
+    livereload:
+      enabled: true
+logging:
+  level:
+    root: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+logging:
+  level:
+    root: debug
