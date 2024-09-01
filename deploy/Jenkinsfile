@@ -12,6 +12,9 @@ pipeline {
         stage('build Docker') {
             steps {
                 echo 'Building Docker..'
+                sh "docker -version"
+                sh "docker build -t devjk4254/penguin ./${params.role}"
+                sh "docker image push devjk4254/penguin"
             }
         }
     }
