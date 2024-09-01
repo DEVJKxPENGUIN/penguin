@@ -1,14 +1,19 @@
-node {
-    stage('Build') {
-        echo 'Building..'
-        sh "ls -la"
-        sh "pwd"
-    }
-    stage('Test') {
-        echo 'Testing..'
-        sh "sleep 5"
-    }
-    stage('Deploy') {
-        echo 'Deploying....'
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            echo 'Building..'
+            sh "git clone https://github.com/DEVJKxPENGUIN/penguin.git"
+            sh "ls -la"
+            sh "pwd"
+        }
+        stage('Test') {
+            echo 'Testing..'
+            sh "sleep 5"
+        }
+        stage('Deploy') {
+            echo 'Deploying....'
+        }
     }
 }
