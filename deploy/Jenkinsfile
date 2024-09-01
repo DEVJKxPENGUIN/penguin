@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        docker { image }
-    }
+    agent any
     stages {
         stage('build jar') {
             steps {
