@@ -5,7 +5,8 @@ pipeline {
             steps {
                 echo 'Building..'
                 echo "${params.role}"
-                sh "ls -la"
+                sh "./gradlew ${params.role}:bootJar"
+                sh "ls -la ./${params.role}/build/libs"
             }
         }
         stage('build Docker') {
