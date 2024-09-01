@@ -1,19 +1,18 @@
 pipeline {
     agent any
-
     stages {
-        stage('Build') {
-            echo 'Building..'
-            sh "git clone https://github.com/DEVJKxPENGUIN/penguin.git"
-            sh "ls -la"
-            sh "pwd"
+        stage('build Jar') {
+            steps {
+                echo 'Building..'
+                echo ${params.role}
+                sh "git clone https://github.com/DEVJKxPENGUIN/penguin.git"
+                sh "ls -la"
+            }
         }
-        stage('Test') {
-            echo 'Testing..'
-            sh "sleep 5"
-        }
-        stage('Deploy') {
-            echo 'Deploying....'
+        stage('build Docker') {
+            steps {
+                echo 'Building Docker..'
+            }
         }
     }
 }
