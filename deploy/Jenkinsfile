@@ -1,7 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker { image }
+    }
     stages {
-        stage('build Jar') {
+        stage('build jar') {
             steps {
                 echo 'Building..'
                 echo "${params.role}"
@@ -9,12 +11,11 @@ pipeline {
                 sh "ls -la ./${params.role}/build/libs"
             }
         }
-        stage('build Docker') {
+        stage('build image') {
             steps {
                 echo 'Building Docker..'
-                sh "docker -version"
-                sh "docker build -t devjk4254/penguin ./${params.role}"
-                sh "docker image push devjk4254/penguin"
+                def image = docker.build("devjk4254/penguin", "./${params.role}")
+                image.push()
             }
         }
     }
