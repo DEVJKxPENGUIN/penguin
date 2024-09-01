@@ -12,8 +12,8 @@ pipeline {
         stage('build image') {
             steps {
                 echo 'Building Docker..'
-                def image = docker.build("devjk4254/penguin", "./${params.role}")
-                image.push()
+                sh "docker build -t devjk4254/penguin ./${params.role}"
+                sh "docker image push devjk4254/penguin"
             }
         }
     }
