@@ -18,8 +18,8 @@ pipeline {
         stage('build image') {
             steps {
                 echo 'Building Docker..'
-                sh "docker build -t devjk4254/penguin ./${params.role}"
-                sh "docker image push devjk4254/penguin"
+                sh "docker --version"
+                sh "docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin --push ./${params.role}"
             }
         }
     }
