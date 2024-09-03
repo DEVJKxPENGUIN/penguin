@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        dockerTool 'docker'
+        org.jenkinsci.plugins.docker.commons.tools.DockerTool 'docker'
     }
     environment {
         DOCKER_CERT_PATH = credentials('dockerhub')
