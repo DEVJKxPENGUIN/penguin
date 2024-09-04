@@ -7,7 +7,7 @@ kind: Pod
 spec:
   containers:
   - name: docker
-    image: docker:23.0-dind
+    image: docker:27-cli
     securityContext:
       privileged: true
     env:
@@ -16,10 +16,20 @@ spec:
     volumeMounts:
     - name: dockersock
       mountPath: /var/run/docker.sock
+  - name: gradle
+    image: gradle:8.5.0-jdk21
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: gradle-cache
+      mountPath: /home/gradle/.gradle
   volumes:
   - name: dockersock
     hostPath:
       path: /var/run/docker.sock
+  - name: gradle-cache
+    emptyDir: {}
 """
         }
     }
@@ -37,11 +47,11 @@ spec:
 
         stage('Build Jar') {
             steps {
-                container('docker') {
+                container('gradle') {
                     sh """
                     echo 'Building..'
                     echo "${params.role}"
-                    ./gradlew ${params.role}:bootJar
+                    gradle ${params.role}:bootJar
                     ls -la ./${params.role}/build/libs
                     """
                 }
