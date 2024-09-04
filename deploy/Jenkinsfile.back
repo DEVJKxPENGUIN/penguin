@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_CERT_PATH = credentials('dockerhub')
+    }
+    stages {
+        stage('build jar') {
+            steps {
+                echo 'Building..'
+                echo "${params.role}"
+                sh "./gradlew ${params.role}:bootJar"
+                sh "ls -la ./${params.role}/build/libs"
+            }
+        }
+        stage('build image') {
+            steps {
+                echo 'Building Docker..'
+                sh "docker --version"
+                sh "docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin --push ./${params.role}"
+            }
+        }
+    }
+}
+

@@ -1,22 +1,57 @@
-pipeline {
-    agent any
-    environment {
-        DOCKER_CERT_PATH = credentials('dockerhub')
-    }
-    stages {
-        stage('build jar') {
+podTemplate(yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:27-dind
+    securityContext:
+      privileged: true
+    env:
+    - name: DOCKER_TLS_CERTDIR
+      value: ""
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
+""") {
+    node(POD_LABEL) {
+        environment {
+            DOCKER_CERT_PATH = credentials('dockerhub')
+        }
+
+        stage('Checkout') {
             steps {
-                echo 'Building..'
-                echo "${params.role}"
-                sh "./gradlew ${params.role}:bootJar"
-                sh "ls -la ./${params.role}/build/libs"
+                checkout scm
             }
         }
-        stage('build image') {
+
+        stage('Build Jar') {
             steps {
-                echo 'Building Docker..'
-                sh "docker --version"
-                sh "docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin --push ./${params.role}"
+                container('docker') {
+                    sh """
+                    echo 'Building..'
+                    echo "${params.role}"
+                    ./gradlew ${params.role}:bootJar
+                    ls -la ./${params.role}/build/libs
+                    """
+                }
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                container('docker') {
+                    sh """
+                    echo 'Building Docker..'
+                    docker --version
+                    docker buildx create --use
+                    docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
+                    """
+                }
             }
         }
     }
