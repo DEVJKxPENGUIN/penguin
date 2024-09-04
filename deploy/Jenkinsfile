@@ -4,7 +4,7 @@ kind: Pod
 spec:
   containers:
   - name: docker
-    image: docker:27-dind
+    image: docker:23.0-dind
     securityContext:
       privileged: true
     env:
@@ -19,38 +19,42 @@ spec:
       path: /var/run/docker.sock
 """) {
     node(POD_LABEL) {
-        environment {
-            DOCKER_CERT_PATH = credentials('dockerhub')
-        }
-
-        stage('Checkout') {
-            steps {
-                checkout scm
+        pipeline {
+            agent any
+            environment {
+                DOCKER_CERT_PATH = credentials('dockerhub')
             }
-        }
-
-        stage('Build Jar') {
-            steps {
-                container('docker') {
-                    sh """
-                    echo 'Building..'
-                    echo "${params.role}"
-                    ./gradlew ${params.role}:bootJar
-                    ls -la ./${params.role}/build/libs
-                    """
+            stages {
+                stage('Checkout') {
+                    steps {
+                        checkout scm
+                    }
                 }
-            }
-        }
 
-        stage('Build and Push Docker Image') {
-            steps {
-                container('docker') {
-                    sh """
-                    echo 'Building Docker..'
-                    docker --version
-                    docker buildx create --use
-                    docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
-                    """
+                stage('Build Jar') {
+                    steps {
+                        container('docker') {
+                            sh """
+                            echo 'Building..'
+                            echo "${params.role}"
+                            ./gradlew ${params.role}:bootJar
+                            ls -la ./${params.role}/build/libs
+                            """
+                        }
+                    }
+                }
+
+                stage('Build and Push Docker Image') {
+                    steps {
+                        container('docker') {
+                            sh """
+                            echo 'Building Docker..'
+                            docker --version
+                            docker buildx create --use
+                            docker buildx build --platform linux/amd64,linux/arm64 -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
+                            """
+                        }
+                    }
                 }
             }
         }
