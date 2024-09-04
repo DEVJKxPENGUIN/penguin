@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    tools {
-        dockerTool 'docker'
-    }
     environment {
         DOCKER_CERT_PATH = credentials('dockerhub')
     }
