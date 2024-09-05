@@ -59,7 +59,7 @@ spec:
         stage('Build and Push Docker Image') {
             steps {
                 container('docker') {
-                    withCredentials([usernamePassword(credentials: 'dockerhub',
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
                             usernameVariable: 'DOCKER_USERNAME',
                             passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh """
