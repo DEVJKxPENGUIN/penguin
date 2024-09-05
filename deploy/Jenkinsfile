@@ -13,8 +13,9 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
-    - name: DOCKER_HOST
-      value: "tcp://localhost:2376"
+    ports:
+    - containerPort: 2375
+    - containerPort: 2376
   - name: gradle
     image: gradle:8.5.0-jdk21
     command:
@@ -32,6 +33,7 @@ spec:
 
     environment {
         DOCKER_CERT_PATH = credentials('dockerhub')
+        DOCKER_HOST = 'tcp://localhost:2375'
     }
 
     stages {
