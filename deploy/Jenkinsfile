@@ -59,11 +59,16 @@ spec:
         stage('Build and Push Docker Image') {
             steps {
                 container('docker') {
-                    sh """
-                    docker --version
-                    docker info
-                    docker build -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
-                    """
+                    withCredentials([usernamePassword(credentials: 'dockerhub',
+                            usernameVariable: 'DOCKER_USERNAME',
+                            passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            docker --version
+                            docker info
+                            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                            docker build -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
+                        """
+                    }
                 }
             }
         }
