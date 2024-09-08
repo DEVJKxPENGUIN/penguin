@@ -60,11 +60,13 @@ spec:
                             docker --version
                             docker info
                             echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-                            docker build -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
+                            docker build -t devjk4254/penguin:latest -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
                         """
                     }
                 }
             }
         }
+
+        stage('')
     }
 }
