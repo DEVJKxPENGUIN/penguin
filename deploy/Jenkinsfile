@@ -1,3 +1,10 @@
+def PORT
+if (params.role == 'penguin-web') {
+    PORT = 8081
+} else if (params.role == 'penguin-auth') {
+    PORT = 8082
+}
+
 pipeline {
     agent {
         kubernetes {
@@ -74,6 +81,7 @@ spec:
                         sh """
                             sed -e 's/{{DOCKER_NAME}}/penguin/g' \
                                 -e 's/{{ROLE}}/${params.role}/g' \
+                                -e 's/{{PORT}}/${PORT}/g' \
                                 -e 's/{{TAG}}/${BUILD_NUMBER}/g' \
                                 deployment-template.yaml > ${params.role}/deployment.yaml
                             git config --global user.email rmsghk4254@naver.com

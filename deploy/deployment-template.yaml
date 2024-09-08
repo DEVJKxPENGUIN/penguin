@@ -18,4 +18,4 @@ spec:
           image: devjk4254/{{DOCKER_NAME}}:{{TAG}}
           imagePullPolicy: Always
           ports:
-          - containerPort: 8080
+          - containerPort: {{PORT}}
