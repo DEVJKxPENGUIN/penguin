@@ -37,12 +37,6 @@ spec:
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build Jar') {
             steps {
                 container('gradle') {
@@ -56,7 +50,7 @@ spec:
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build Docker') {
             steps {
                 container('docker') {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub',

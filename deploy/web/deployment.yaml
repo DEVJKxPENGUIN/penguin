@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: penguin
+  name: penguin-web
   namespace: penguin
 spec:
   selector:
     matchLabels:
-      app: penguin
+      app: penguin-web
   replicas: 2
   template:
     metadata:
       labels:
-        app: penguin
+        app: penguin-web
     spec:
       containers:
-        - name: penguin-app
+        - name: penguin-web
           image: devjk4254/penguin:latest
           imagePullPolicy: Always
           ports:
