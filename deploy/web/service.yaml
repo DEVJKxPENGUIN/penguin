@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: penguin 
+  name: penguin-web
   namespace: penguin
 spec:
   selector:
-    app: penguin
+    app: penguin-web
   ports:
     - protocol: TCP
       port: 8080

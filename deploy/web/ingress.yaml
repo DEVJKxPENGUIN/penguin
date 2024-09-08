@@ -16,6 +16,6 @@ spec:
         pathType: Prefix
         backend :
           service:
-            name: penguin
+            name: penguin-web
             port:
               number: 8080
