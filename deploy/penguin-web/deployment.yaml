@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: penguin-web
-          image: devjk4254/penguin:53
+          image: devjk4254/penguin:54
           imagePullPolicy: Always
           ports:
           - containerPort: 8080
