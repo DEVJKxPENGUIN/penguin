@@ -84,6 +84,7 @@ spec:
                         git config --global user.email 'rmsghk4254@naver.com'
                         git config --global user.name 'devjk-jenkins'
                         git remote -v
+                        git show-ref
                         git add .
                         git commit -m "[jenkins] ${params.role}-${BUILD_NUMBER} deployment.yaml"
                         git push origin main
