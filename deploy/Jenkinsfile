@@ -67,6 +67,22 @@ spec:
             }
         }
 
-        stage('')
+        stage('Update Manifest') {
+            steps {
+                dir("deploy") {
+                    sh """
+                        sed -e 's/{{DOCKER_NAME}}/penguin/g' \
+                            -e 's/{{ROLE}}/${params.role}/g' \
+                            -e 's/{{TAG}}/${BUILD_NUMBER}/g' \
+                            deployment-template.yaml > ${params.role}/deployment.yaml
+                        git config --global user.email 'rmsghk4254@naver.com'
+                        git config --global user.name 'devjk-jenkins'
+                        git add .
+                        git commit -m "[jenkins] ${params.role}-${BUILD_NUMBER} deployment.yaml"
+                        git push origin main
+                    """
+                }
+            }
+        }
     }
 }
