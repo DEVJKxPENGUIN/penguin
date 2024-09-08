@@ -37,12 +37,6 @@ spec:
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build Jar') {
             steps {
                 container('gradle') {
