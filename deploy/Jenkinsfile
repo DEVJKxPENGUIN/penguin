@@ -39,8 +39,9 @@ spec:
     }
 
     environment {
-        DOCKER_CERT_PATH = credentials('dockerhub')
-        DOCKER_HOST = 'tcp://localhost:2375'
+//        DOCKER_CERT_PATH = credentials('dockerhub')
+//        DOCKER_HOST = 'tcp://localhost:2375'
+        DOCKER_REGISTRY = 'registry-docker-registry.registry.svc.cluster.local:5000'
     }
 
     stages {
@@ -60,16 +61,22 @@ spec:
         stage('Build Docker') {
             steps {
                 container('docker') {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
-                            usernameVariable: 'DOCKER_USERNAME',
-                            passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh """
-                            docker --version
-                            docker info
-                            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-                            docker build -t devjk4254/penguin:latest -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
-                        """
-                    }
+                    sh """
+                        docker --version
+                        docker info
+                        docker build -t ${DOCKER_REGISTRY}/${params.role}:latest -t ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER} --push ./${params.role}
+                    """
+
+//                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
+//                            usernameVariable: 'DOCKER_USERNAME',
+//                            passwordVariable: 'DOCKER_PASSWORD')]) {
+//                        sh """
+//                            docker --version
+//                            docker info
+//                            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+//                            docker build -t devjk4254/penguin:latest -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
+//                        """
+//                    }
                 }
             }
         }
@@ -79,10 +86,11 @@ spec:
                 dir("deploy") {
                     sshagent(credentials: ['github-deploy-ssh']) {
                         sh """
-                            sed -e 's/{{DOCKER_NAME}}/penguin/g' \
+                            sed -e 's/{{DOCKER_NAME}}/${params.role}/g' \
                                 -e 's/{{ROLE}}/${params.role}/g' \
                                 -e 's/{{PORT}}/${PORT}/g' \
                                 -e 's/{{TAG}}/${BUILD_NUMBER}/g' \
+                                -e 's/{{DOCKER_REGISTRY}}/${DOCKER_REGISTRY}/g' \
                                 deployment-template.yaml > ${params.role}/deployment.yaml
                             git config --global user.email rmsghk4254@naver.com
                             git config --global user.name devjk
