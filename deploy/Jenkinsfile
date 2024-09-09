@@ -64,7 +64,8 @@ spec:
                     sh """
                         docker --version
                         docker info
-                        docker build -t ${DOCKER_REGISTRY}/${params.role}:latest -t ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER} --push ./${params.role}
+                        docker build -t ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER} ./${params.role}
+                        docker push --insecure-registry ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER}
                     """
 
 //                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
