@@ -20,9 +20,13 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
+    - name: DOCKER_BUILDKIT
+      value: "1"
     ports:
     - containerPort: 2375
     - containerPort: 2376
+    args:
+    - --insecure-registry=registry-docker-registry.registry.svc.cluster.local:5000
   - name: gradle
     image: gradle:8.5.0-jdk21
     command:
@@ -40,10 +44,7 @@ spec:
 
     environment {
 //        DOCKER_CERT_PATH = credentials('dockerhub')
-        DOCKER_HOST = 'tcp://localhost:2375'
-        DOCKER_TLS_VERIFY = ''
-        DOCKER_CERT_PATH = ''
-        DOCKER_BUILDKIT = '1'
+//        DOCKER_HOST = 'tcp://localhost:2375'
         DOCKER_REGISTRY = 'registry-docker-registry.registry.svc.cluster.local:5000'
     }
 
