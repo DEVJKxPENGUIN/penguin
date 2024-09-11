@@ -45,9 +45,7 @@ spec:
     environment {
 //        DOCKER_CERT_PATH = credentials('dockerhub')
 //        DOCKER_HOST = 'tcp://localhost:2375'
-//        DOCKER_REGISTRY = 'registry-docker-registry.registry.svc.cluster.local:5000'
-        DOCKER_REGISTRY = 'registry-docker-registry'
-        DOCKER_REGISTRY_PORT = '5000'
+        DOCKER_REGISTRY = 'registry-docker-registry.registry.svc.cluster.local:5000'
     }
 
     stages {
@@ -70,8 +68,8 @@ spec:
                     sh """
                         docker --version
                         docker info
-                        docker build -t ${DOCKER_REGISTRY}.registry.svc.cluster.local:${DOCKER_REGISTRY_PORT}/${params.role}:${BUILD_NUMBER} ./${params.role}
-                        docker push ${DOCKER_REGISTRY}.registry.svc.cluster.local:${DOCKER_REGISTRY_PORT}/${params.role}:${BUILD_NUMBER}
+                        docker build -t ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER} ./${params.role}
+                        docker push ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER}
                     """
 
 //                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
@@ -97,7 +95,7 @@ spec:
                                 -e 's/{{ROLE}}/${params.role}/g' \
                                 -e 's/{{PORT}}/${PORT}/g' \
                                 -e 's/{{TAG}}/${BUILD_NUMBER}/g' \
-                                -e 's/{{DOCKER_REGISTRY}}/${DOCKER_REGISTRY}:${DOCKER_REGISTRY_PORT}/g' \
+                                -e 's/{{DOCKER_REGISTRY}}/${DOCKER_REGISTRY}/g' \
                                 deployment-template.yaml > ${params.role}/deployment.yaml
                             git config --global user.email rmsghk4254@naver.com
                             git config --global user.name devjk
