@@ -37,7 +37,8 @@ spec:
       mountPath: /home/gradle/.gradle
   volumes:
   - name: gradle-cache
-    persistentVolumeClaim: gradle-pvc
+    persistentVolumeClaim:
+      claimName: gradle-pvc
 """
         }
     }
