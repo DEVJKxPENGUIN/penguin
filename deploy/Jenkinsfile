@@ -47,6 +47,7 @@ spec:
 //        DOCKER_CERT_PATH = credentials('dockerhub')
 //        DOCKER_HOST = 'tcp://localhost:2375'
         DOCKER_REGISTRY = 'registry-docker-registry.registry.svc.cluster.local:5000'
+        DOCKER_REGISTRY_IP = '10.105.58.187:5000'
     }
 
     stages {
@@ -96,7 +97,7 @@ spec:
                                 -e 's/{{ROLE}}/${params.role}/g' \
                                 -e 's/{{PORT}}/${PORT}/g' \
                                 -e 's/{{TAG}}/${BUILD_NUMBER}/g' \
-                                -e 's/{{DOCKER_REGISTRY}}/${DOCKER_REGISTRY}/g' \
+                                -e 's/{{DOCKER_REGISTRY}}/${DOCKER_REGISTRY_IP}/g' \
                                 deployment-template.yaml > ${params.role}/deployment.yaml
                             git config --global user.email rmsghk4254@naver.com
                             git config --global user.name devjk
