@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: penguin-web
-          image: registry-docker-registry.registry.svc.cluster.local:5000/penguin-web:64
+          image: http://registry-docker-registry.registry.svc.cluster.local:5000/penguin-web:65
           imagePullPolicy: Always
           ports:
           - containerPort: 8081
