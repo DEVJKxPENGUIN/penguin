@@ -13,10 +13,9 @@ spec:
       labels:
         app: penguin-web
     spec:
-      dnsPolicy: ClusterFirst
       containers:
         - name: penguin-web
-          image: registry-docker-registry.registry.svc.cluster.local:5000/penguin-web:74
+          image: 10.105.58.187:5000/penguin-web:75
           imagePullPolicy: Always
           ports:
           - containerPort: 8081
