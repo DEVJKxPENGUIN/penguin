@@ -13,7 +13,6 @@ spec:
       labels:
         app: {{ROLE}}
     spec:
-      dnsPolicy: ClusterFirst
       containers:
         - name: penguin-web
           image: {{DOCKER_REGISTRY}}/{{DOCKER_NAME}}:{{TAG}}
