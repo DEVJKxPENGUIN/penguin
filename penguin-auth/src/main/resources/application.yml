@@ -9,6 +9,15 @@ spring:
     activate:
       on-profile: "common"
 
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
   output:
     ansi:
       enabled: always
@@ -22,6 +31,10 @@ server:
     acceptCount: 100
     maxKeepAliveRequests: 100
     connectionTimeout: 60000
+  servlet:
+    session:
+      cookie:
+        name: DEVJK_SESSION
 ---
 spring:
   config:
@@ -30,9 +43,21 @@ spring:
   devtools:
     livereload:
       enabled: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}/penguin?useSSL=false&serverTimezone=UTC&connectTimeout=5000&autoReconnect=true&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
 logging:
   level:
     root: debug
+
+redis-host: ${REDIS_HOST}
+redis-port: ${REDIS_PORT}
+redis-password: ${REDIS_PASSWORD}
+
 ---
 spring:
   config:

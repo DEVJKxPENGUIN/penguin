@@ -27,6 +27,10 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.springframework.boot")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "kotlin")
+    apply(plugin = "kotlin-spring") //all-open
+    apply(plugin = "kotlin-jpa")
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-web")
@@ -35,6 +39,12 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.springframework.boot:spring-boot-starter-data-redis")
+        implementation("org.springframework.boot:spring-boot-starter-cache")
+        implementation("io.lettuce:lettuce-core")
+        implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("com.mysql:mysql-connector-j")
     }
 
     tasks.withType<Test> {
