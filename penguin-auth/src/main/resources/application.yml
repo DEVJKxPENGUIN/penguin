@@ -9,6 +9,9 @@ spring:
     activate:
       on-profile: "common"
 
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
   jpa:
     database: mysql
     show-sql: true
@@ -21,6 +24,8 @@ spring:
   output:
     ansi:
       enabled: always
+  session:
+
 
 server:
   port: 8082
@@ -31,10 +36,11 @@ server:
     acceptCount: 100
     maxKeepAliveRequests: 100
     connectionTimeout: 60000
-  servlet:
-    session:
-      cookie:
-        name: DEVJK_SESSION
+
+redis-host: ${REDIS_HOST}
+redis-port: ${REDIS_PORT}
+redis-password: ${REDIS_PASSWORD}
+
 ---
 spring:
   config:
@@ -53,10 +59,6 @@ spring:
 logging:
   level:
     root: debug
-
-redis-host: ${REDIS_HOST}
-redis-port: ${REDIS_PORT}
-redis-password: ${REDIS_PASSWORD}
 
 ---
 spring:
