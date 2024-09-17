@@ -32,6 +32,6 @@ class User(
     }
 
     fun renewSession() {
-        lastLoginAt = lastLoginAt.plusSeconds(SESSION_TIME)
+        lastLoginAt = LocalDateTime.now()
     }
 }

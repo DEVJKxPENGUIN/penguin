@@ -62,4 +62,10 @@ class AuthController(
                 )
             )
     }
+
+    @GetMapping("/logout")
+    fun logout(): ResponseEntity<*> {
+        authService.logout()
+        return ResponseEntity.ok().body(BaseResponse.success())
+    }
 }

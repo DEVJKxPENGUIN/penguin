@@ -117,4 +117,8 @@ class AuthService(
         session.setAttribute(AUTH_VALUE, user)
         return session.id
     }
+
+    fun logout() {
+        session.invalidate()
+    }
 }
