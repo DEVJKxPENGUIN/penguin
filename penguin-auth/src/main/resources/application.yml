@@ -38,6 +38,7 @@ server:
     session:
       cookie:
         name: devjksession
+        domain: .devjk.me
 
 redis-host: ${REDIS_HOST}
 redis-port: ${REDIS_PORT}
