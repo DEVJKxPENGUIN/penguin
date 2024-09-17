@@ -45,11 +45,12 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("io.jsonwebtoken:jjwt:0.12.3")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
-        implementation("com.mysql:mysql-connector-j")
         implementation("com.google.code.gson:gson")
         implementation("org.apache.commons:commons-lang3")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+        implementation("com.zaxxer:HikariCP:5.1.0")
+        implementation("com.mysql:mysql-connector-j:9.0.0")
     }
 
     tasks.withType<KotlinCompile> {

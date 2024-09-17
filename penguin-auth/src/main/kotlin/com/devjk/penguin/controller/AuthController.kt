@@ -20,6 +20,7 @@ class AuthController(
     companion object {
         const val AUTH_VALUE = "devjk_auth"
         const val OAUTH_STATE = "oauth_state"
+        const val AUTH_REDIRECT = "redirect"
     }
 
     @GetMapping("/auth")
@@ -33,8 +34,9 @@ class AuthController(
     }
 
     @GetMapping("/start")
-    fun start(): ResponseEntity<*> {
+    fun start(rd: String?): ResponseEntity<*> {
         val state = authService.setStateToken()
+        authService.setRedirectSession(rd)
         val googleLoginUrl = authService.makeGoogleLoginUrl(state)
 
         return ResponseEntity
@@ -51,9 +53,12 @@ class AuthController(
         val idToken = authService.getOpenId(code)
         val user = authService.getRegisteredUser(idToken)
         val sessionKey = authService.login(user)
+        val rd = authService.getRedirectSession()
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
             .header("Authorization", sessionKey)
+            .header("Location", rd)
             .body(
                 BaseResponse.success(
                     mapOf(

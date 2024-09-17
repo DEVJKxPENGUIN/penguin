@@ -1,5 +1,6 @@
 package com.devjk.penguin.service
 
+import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
 import com.devjk.penguin.db.entity.User
@@ -49,6 +50,16 @@ class AuthService(
         val state = BigInteger(130, SecureRandom()).toString(32)
         session.setAttribute(OAUTH_STATE, state)
         return state
+    }
+
+    fun setRedirectSession(rd: String?) {
+        rd?.let {
+            session.setAttribute(AUTH_REDIRECT, rd)
+        }
+    }
+
+    fun getRedirectSession(): String {
+        return (session.getAttribute(AUTH_REDIRECT) ?: UrlUtils.serverHome()) as String
     }
 
     fun makeGoogleLoginUrl(state: String): String {

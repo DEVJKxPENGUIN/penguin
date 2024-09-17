@@ -9,9 +9,23 @@ spring:
     activate:
       on-profile: "common"
 
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
+
   output:
     ansi:
       enabled: always
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
 
 server:
   port: 8081
@@ -22,6 +36,10 @@ server:
     acceptCount: 100
     maxKeepAliveRequests: 100
     connectionTimeout: 60000
+
+db-host: ${DB_HOST}
+db-username: ${DB_USERNAME}
+db-password: ${DB_PASSWORD}
 ---
 spring:
   config:
