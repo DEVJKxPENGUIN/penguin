@@ -21,6 +21,7 @@ class ExceptionAdvice {
     }
 
     private fun handleResponse(errorCode: ErrorCode, e: Exception): ResponseEntity<*> {
+        e.printStackTrace()
         return ResponseEntity.status(errorCode.httpStatus)
             .body(BaseResponse.error(errorCode, e.message ?: errorCode.message))
     }

@@ -25,11 +25,11 @@ class AuthController(
 
     @GetMapping("/auth")
     fun auth(): ResponseEntity<*> {
-        val sessionKey = authService.getUserAuthorization()
-        sessionKey ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+        val userInfo = authService.getUserAuthorization()
+        userInfo ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
 
         return ResponseEntity.ok()
-            .header("Authorization", sessionKey)
+            .header("Authorization", "Bearer $userInfo")
             .body(BaseResponse.success())
     }
 
@@ -52,12 +52,12 @@ class AuthController(
         authService.verifyStateToken(state)
         val idToken = authService.getOpenId(code)
         val user = authService.getRegisteredUser(idToken)
-        val sessionKey = authService.login(user)
+        val userInfo = authService.login(user)
         val rd = authService.getRedirectSession()
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
-            .header("Authorization", sessionKey)
+            .header("Authorization", "Bearer $userInfo")
             .header("Location", rd)
             .body(
                 BaseResponse.success(

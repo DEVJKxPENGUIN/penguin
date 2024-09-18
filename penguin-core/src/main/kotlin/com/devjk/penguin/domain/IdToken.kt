@@ -1,7 +1,7 @@
 package com.devjk.penguin.domain
 
+import com.devjk.penguin.utils.JsonHelper
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,7 +19,7 @@ data class IdToken(
         fun from(token: String): IdToken {
             val encodedPayload = token.split(".")[1]
             val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
-            return ObjectMapper().readValue(payload, IdToken::class.java)
+            return JsonHelper.fromJson(payload, IdToken::class.java)
         }
     }
 }

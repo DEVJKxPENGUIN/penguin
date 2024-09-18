@@ -40,7 +40,7 @@ class AuthService(
             if (user.isNotExpired()) {
                 user.renewSession()
                 session.setAttribute(AUTH_VALUE, user)
-                return session.id
+                return user.toJsonEncoded()
             }
         }
         return null
@@ -126,7 +126,7 @@ class AuthService(
         user.renewSession()
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)
-        return session.id
+        return user.toJsonEncoded()
     }
 
     fun logout() {

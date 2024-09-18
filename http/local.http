@@ -1,0 +1,3 @@
+GET http://localhost:8081
+Authorization: Bearer eyJpZCI6MSwibmlja05hbWUiOiJkZXZqayIsImVtYWlsIjoiZGZqdW5nNDI1NEBnbWFpbC5jb20iLCJsYXN0TG9naW5BdCI6WzIwMjQsOSwxOCwyMiw1LDUsMjQwOTU1MDAwXX0=
+
