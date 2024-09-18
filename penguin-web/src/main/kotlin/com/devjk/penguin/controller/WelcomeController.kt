@@ -15,7 +15,14 @@ class WelcomeController {
         model: Model
     ): String {
         model.addAttribute("title", "정자동 펭귄마을")
-        model.addAttribute("message", "일한다또히")
+        model.addAttribute("message", "또히는 일해요!")
+        user?.let {
+            model.addAttribute("user", it)
+            model.addAttribute("isLogin", true)
+        } ?: let {
+            model.addAttribute("user", "guest")
+            model.addAttribute("isLogin", false)
+        }
         return "index"
     }
 }

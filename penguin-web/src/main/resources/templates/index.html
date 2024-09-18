@@ -2,54 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>일해라또히</title>
+  <title>코딩하는또히</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="overflow-hidden m-0 h-screen">
-<div id="app" class="flex w-full h-full">
-
-  <div class="flex flex-col w-full justify-center">
-    <div class="flex justify-center content-center">
-      <h1 class="text-3xl font-bold" th:text="${title}">정자동 펭귄마을</h1>
+<div id="app" class="flex flex-col w-full h-full px-10">
+  <div class="top flex w-full h-20 outline-slate-500 border-b-2">
+    <div class="lefttop flex flex-row flex-1 h-full place-items-center">
+      <div class="mx-2"><h1 class="text-3xl font-bold" th:text="${title}"></h1></div>
     </div>
-    <div class="flex justify-center content-center">
-      <img
-          src="https://avatars.githubusercontent.com/u/179611159?s=400&u=0e426646f29ce7e6b1e8108031fc0f529b89bb5e&v="/>
+    <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()" th:if="${isLogin}">로그아웃</div>
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()" th:unless="${isLogin}">로그인</div>
+      <div class="mx-2" th:text="${user.email}"></div>
+    </div>
+  </div>
+  <div class="body flex w-full h-full justify-center">
+
+    <div class="flex flex-col w-full justify-center">
+      <div class="flex justify-center content-center">
+        <h1 class="text-3xl font-bold" th:text="${message}"></h1>
+      </div>
+      <div class="flex justify-center content-center">
+        <img
+            src="https://avatars.githubusercontent.com/u/179611159?s=400&u=0e426646f29ce7e6b1e8108031fc0f529b89bb5e&v="/>
+      </div>
+
+    </div>
+    <div class="flex flex-col w-full justify-center">
+      <div class="border-l-2">
+        <div class="flex flex-col justify-center content-center pl-20">
+          <ul class="text-4xl mb-6">Navigator</ul>
+        </div>
+        <div class="flex flex-col justify-center content-center pl-20 pb-10">
+          <ul class="text-xl mb-2">Server Management Tools</ul>
+          <li><a class="text-cyan-500" href="https://devjk.me">서버 홈(https://devjk.me)</a></li>
+          <li><a class="text-cyan-500" href="https://kubernetes.devjk.me">k8s
+            대시보드(https://kubernetes.devjk.me)</a></li>
+          <li><a class="text-cyan-500"
+                 href="https://jenkins.devjk.me">젠킨스(https://jenkins.devjk.me)</a></li>
+          <li><a class="text-cyan-500" href="https://argocd.devjk.me">ARGO
+            CD(https://argocd.devjk.me)</a></li>
+        </div>
+        <div class="flex flex-col justify-center content-center pl-20 pb-10">
+          <ul class="text-xl mb-2">Running Services</ul>
+          <li><a class="text-cyan-500" href="https://trinity-log.in">TRINITY-LOG(https://trinity-log.in)</a>
+          </li>
+          <li><a class="text-cyan-500" href="https://clubtetrix.space">CLUB-TETRIX(https://clubtetrix.space)</a>
+          </li>
+          <li><a class="text-cyan-200" href="#">TRINITY(Coming Soon)</a></li>
+        </div>
+      </div>
+
     </div>
 
   </div>
-  <div class="flex flex-col w-full justify-center">
-    <div class="border-l-2">
-      <div class="flex flex-col justify-center content-center pl-20">
-        <ul class="text-4xl mb-6">Navigator</ul>
-      </div>
-      <div class="flex flex-col justify-center content-center pl-20 pb-10">
-        <ul class="text-xl mb-2">Server Management Tools</ul>
-        <li><a class="text-cyan-500" href="https://devjk.me">서버 홈(https://devjk.me)</a></li>
-        <li><a class="text-cyan-500" href="https://kubernetes.devjk.me">k8s
-          대시보드(https://kubernetes.devjk.me)</a></li>
-        <li><a class="text-cyan-500"
-               href="https://jenkins.devjk.me">젠킨스(https://jenkins.devjk.me)</a></li>
-        <li><a class="text-cyan-500" href="https://argocd.devjk.me">ARGO
-          CD(https://argocd.devjk.me)</a></li>
-      </div>
-      <div class="flex flex-col justify-center content-center pl-20 pb-10">
-        <ul class="text-xl mb-2">Running Services</ul>
-        <li><a class="text-cyan-500" href="https://trinity-log.in">TRINITY-LOG(https://trinity-log.in)</a>
-        </li>
-        <li><a class="text-cyan-500" href="https://clubtetrix.space">CLUB-TETRIX(https://clubtetrix.space)</a>
-        </li>
-        <li><a class="text-cyan-200" href="#">TRINITY(Coming Soon)</a></li>
-      </div>
-    </div>
 
-  </div>
 
 </div>
 </body>
-<script type="module">
+<script>
+  function login() {
+    alert("todo!!")
+  }
 
+  function logout() {
+    alert("todo!!")
+  }
 </script>
 <style>
 </style>
