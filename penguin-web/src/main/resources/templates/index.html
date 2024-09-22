@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>코딩하는또히</title>
@@ -13,8 +13,10 @@
       <div class="mx-2"><h1 class="text-3xl font-bold" th:text="${title}"></h1></div>
     </div>
     <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
-      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()" th:if="${isLogin}">로그아웃</div>
-      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()" th:unless="${isLogin}">로그인</div>
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()" th:if="${isLogin}">로그아웃
+      </div>
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()" th:unless="${isLogin}">로그인
+      </div>
       <div class="mx-2" th:text="${user.email}"></div>
     </div>
   </div>
@@ -62,13 +64,13 @@
 
 </div>
 </body>
-<script>
+<script th:inline="javascript">
   function login() {
-    alert("todo!!")
+    location.href = [[${loginUrl}]]
   }
 
   function logout() {
-    alert("todo!!")
+    location.href = [[${logoutUrl}]]
   }
 </script>
 <style>

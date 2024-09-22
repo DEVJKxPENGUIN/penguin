@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
@@ -25,7 +24,7 @@ class AuthController(
     }
 
     @GetMapping("/auth")
-    fun auth(@RequestParam alwaysSuccess: Boolean = false): ResponseEntity<*> {
+    fun auth(alwaysSuccess: Boolean = false): ResponseEntity<*> {
         val userInfo: String?
         try {
             userInfo = authService.getUserAuthorization()
@@ -78,8 +77,13 @@ class AuthController(
     }
 
     @GetMapping("/logout")
-    fun logout(): ResponseEntity<*> {
+    fun logout(rd: String?): ResponseEntity<*> {
         authService.logout()
-        return ResponseEntity.ok().body(BaseResponse.success())
+        if (rd.isNullOrBlank()) {
+            return ResponseEntity.ok().body(BaseResponse.success())
+        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header("Location", rd)
+            .body(BaseResponse.success())
     }
 }
