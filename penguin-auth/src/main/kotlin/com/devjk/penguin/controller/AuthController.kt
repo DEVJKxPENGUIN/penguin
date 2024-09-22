@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
@@ -24,9 +25,17 @@ class AuthController(
     }
 
     @GetMapping("/auth")
-    fun auth(): ResponseEntity<*> {
-        val userInfo = authService.getUserAuthorization()
-        userInfo ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+    fun auth(@RequestParam alwaysSuccess: Boolean = false): ResponseEntity<*> {
+        val userInfo: String?
+        try {
+            userInfo = authService.getUserAuthorization()
+            userInfo ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+        } catch (e: Exception) {
+            if (alwaysSuccess) {
+                return ResponseEntity.ok().body(BaseResponse.success())
+            }
+            throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+        }
 
         return ResponseEntity.ok()
             .header("Authorization", "Bearer $userInfo")
