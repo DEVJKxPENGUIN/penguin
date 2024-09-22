@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: penguin-auth
+  namespace: penguin
+spec:
+  selector:
+    app: penguin-auth
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082

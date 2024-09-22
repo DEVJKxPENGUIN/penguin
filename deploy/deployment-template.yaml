@@ -14,7 +14,7 @@ spec:
         app: {{ROLE}}
     spec:
       containers:
-        - name: penguin-web
+        - name: {{ROLE}}
           image: {{DOCKER_REGISTRY}}/{{DOCKER_NAME}}:{{TAG}}
           imagePullPolicy: Always
           envFrom:

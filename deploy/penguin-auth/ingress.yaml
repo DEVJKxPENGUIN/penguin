@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: penguin-auth-ingress
+  namespace: penguin
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    #nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: auth.devjk.me
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend :
+          service:
+            name: penguin-auth
+            port:
+              number: 8082
