@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: penguin-auth
+  namespace: penguin
+spec:
+  selector:
+    matchLabels:
+      app: penguin-auth
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: penguin-auth
+    spec:
+      containers:
+        - name: penguin-auth
+          image: 10.105.58.187:5000/penguin-auth:81
+          imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: penguin-secret
+          ports:
+          - containerPort: 8082
