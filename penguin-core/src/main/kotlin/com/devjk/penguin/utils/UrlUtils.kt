@@ -8,7 +8,7 @@ class UrlUtils {
             return if (Profiles.isLocal()) {
                 "http://localhost:8082/callback"
             } else {
-                "https://auth.devjk.com/callback"
+                "https://auth.devjk.me/callback"
             }
         }
 
@@ -16,7 +16,7 @@ class UrlUtils {
             return if (Profiles.isLocal()) {
                 "http://localhost:8081"
             } else {
-                "https://devjk.com"
+                "https://devjk.me"
             }
         }
 
