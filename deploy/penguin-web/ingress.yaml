@@ -5,6 +5,9 @@ metadata:
   namespace: penguin
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.devjk.me/auth"
+    # nginx.ingress.kubernetes.io/auth-signin: "https://auth.devjk.me/oauth2/start?rd=$scheme://$host$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization,X-Auth-Request-User,X-Auth-Request-Email"
     #nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
