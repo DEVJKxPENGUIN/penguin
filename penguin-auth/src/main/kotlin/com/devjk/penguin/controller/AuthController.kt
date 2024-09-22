@@ -34,7 +34,7 @@ class AuthController(
             if (alwaysSuccess) {
                 return ResponseEntity.ok().body(BaseResponse.success())
             }
-            throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+            throw e
         }
 
         return ResponseEntity.ok()
