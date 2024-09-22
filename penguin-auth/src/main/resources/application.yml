@@ -82,7 +82,7 @@ server:
         name: devjksession
         secure: true
         http-only: true
-        domain: .devjk.me
+        domain: devjk.me
 
 logging:
   level:
