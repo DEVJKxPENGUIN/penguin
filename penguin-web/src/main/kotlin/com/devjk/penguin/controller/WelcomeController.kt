@@ -20,7 +20,7 @@ class WelcomeController {
             model.addAttribute("user", it)
             model.addAttribute("isLogin", true)
         } ?: let {
-            model.addAttribute("user", "guest")
+            model.addAttribute("user", User(email = "guest"))
             model.addAttribute("isLogin", false)
         }
         return "index"

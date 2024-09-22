@@ -1,6 +1,6 @@
 package com.devjk.penguin.utils
 
-class UrlUtils() {
+class UrlUtils {
 
     companion object {
 

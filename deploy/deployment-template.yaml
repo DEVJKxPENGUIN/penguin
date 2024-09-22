@@ -17,5 +17,8 @@ spec:
         - name: penguin-web
           image: {{DOCKER_REGISTRY}}/{{DOCKER_NAME}}:{{TAG}}
           imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: penguin-secret
           ports:
           - containerPort: {{PORT}}

@@ -49,7 +49,6 @@ subprojects {
         implementation("org.apache.commons:commons-lang3")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-        implementation("com.zaxxer:HikariCP:5.1.0")
         implementation("com.mysql:mysql-connector-j:9.0.0")
     }
 

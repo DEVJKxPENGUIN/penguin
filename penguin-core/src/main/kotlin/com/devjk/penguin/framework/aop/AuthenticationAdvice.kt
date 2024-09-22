@@ -9,8 +9,11 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Pointcut
 import org.aspectj.lang.reflect.MethodSignature
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
+import java.util.function.Predicate
 
 @Aspect
 @Component
@@ -64,6 +67,9 @@ class AuthenticationAdvice(
                 .uri("http://localhost:8082/auth")
                 .cookie("devjksession", sessionCookie?.value ?: "")
                 .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.UNAUTHORIZED)) {
+                    Mono.empty()
+                }
                 .toBodilessEntity()
                 .block()
 
