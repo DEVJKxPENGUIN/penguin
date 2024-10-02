@@ -6,20 +6,31 @@ import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IdToken(
-    val aud: String = "",
-    val exp: String = "",
-    val iat: String = "",
-    val iss: String = "",
-    val sub: String = "",
-    val email: String = ""
+    var aud: String = "",
+    var exp: String = "",
+    var iat: String = "",
+    var iss: String = "",
+    var sub: String = "",
+    var email: String = "",
+    var origin: String = ""
 ) {
 
     companion object {
 
         fun from(token: String): IdToken {
-            val encodedPayload = token.split(".")[1]
-            val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
-            return JsonHelper.fromJson(payload, IdToken::class.java)
+            return IdToken(origin = token)
         }
+    }
+
+    init {
+        val encodedPayload = origin.split(".")[1]
+        val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
+        val payloadMap = JsonHelper.fromJson(payload, Map::class.java)
+        this.aud = payloadMap["aud"] as String
+        this.exp = payloadMap["exp"] as String
+        this.iat = payloadMap["iat"] as String
+        this.iss = payloadMap["iss"] as String
+        this.sub = payloadMap["sub"] as String
+        this.email = payloadMap["email"] as String
     }
 }

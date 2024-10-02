@@ -22,6 +22,9 @@ class User(
     @Column(name = "email")
     val email: String = "",
 
+    @Column(name = "id_token")
+    val idToken: String = "",
+
     @Column(name = "last_login_at")
     var lastLoginAt: LocalDateTime = LocalDateTime.now()
 ) : BaseEntity(), Serializable {
@@ -42,11 +45,5 @@ class User(
 
     fun renewSession() {
         lastLoginAt = LocalDateTime.now()
-    }
-
-    fun toJsonEncoded(): String {
-        val json = JsonHelper.toJson(this)
-        val encoded = Base64.getUrlEncoder().encode(json.toByteArray())
-        return String(encoded)
     }
 }

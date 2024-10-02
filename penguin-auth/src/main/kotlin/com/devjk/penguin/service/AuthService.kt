@@ -34,13 +34,13 @@ class AuthService(
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    fun getUserAuthorization(): String? {
+    fun getUserAuthorization(): User? {
         session.getAttribute(AUTH_VALUE)?.let {
             val user = it as User
             if (user.isNotExpired()) {
                 user.renewSession()
                 session.setAttribute(AUTH_VALUE, user)
-                return user.toJsonEncoded()
+                return user
             }
         }
         return null
@@ -119,14 +119,13 @@ class AuthService(
 
     fun getRegisteredUser(idToken: IdToken): User {
         return userRepository.findByEmail(idToken.email)
-            ?: throw BaseException(ErrorCode.UNAUTHORIZED)
+            ?: throw BaseException(ErrorCode.UNREGISTERED_USER)
     }
 
-    fun login(user: User): String {
+    fun login(user: User) {
         user.renewSession()
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)
-        return user.toJsonEncoded()
     }
 
     fun logout() {
