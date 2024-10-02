@@ -46,7 +46,8 @@ class AuthenticationAdvice(
                     val idTokenStr = getAuthorizationHeader()
                     var user: AuthUser? = null
                     if (!idTokenStr.isNullOrBlank()) {
-                        user = AuthUser(IdToken.from(idTokenStr).email)
+                        val token = IdToken.from(idTokenStr)
+                        user = AuthUser(token.email)
                     }
                     args[index] = user
                 }

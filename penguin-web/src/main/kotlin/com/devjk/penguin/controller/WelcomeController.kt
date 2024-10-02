@@ -1,6 +1,5 @@
-package com.devjk.penguin.controller;
+package com.devjk.penguin.controller
 
-import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.domain.AuthUser
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.utils.UrlUtils
@@ -22,7 +21,7 @@ class WelcomeController {
             model.addAttribute("user", it)
             model.addAttribute("isLogin", true)
         } ?: let {
-            model.addAttribute("user", User(email = "guest"))
+            model.addAttribute("user", AuthUser(email = "guest"))
             model.addAttribute("isLogin", false)
         }
         model.addAttribute("loginUrl", UrlUtils.loginUrl())

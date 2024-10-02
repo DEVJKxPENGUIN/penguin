@@ -1,5 +1,5 @@
 package com.devjk.penguin.domain
 
-class AuthUser (
-    private val email: String,
+data class AuthUser (
+    val email: String = ""
 )

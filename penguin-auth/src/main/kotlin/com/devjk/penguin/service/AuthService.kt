@@ -122,8 +122,9 @@ class AuthService(
             ?: throw BaseException(ErrorCode.UNREGISTERED_USER)
     }
 
-    fun login(user: User) {
+    fun login(user: User, idToken: IdToken) {
         user.renewSession()
+        user.idToken = idToken.origin
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)
     }

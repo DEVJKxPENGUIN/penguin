@@ -23,7 +23,7 @@ class User(
     val email: String = "",
 
     @Column(name = "id_token")
-    val idToken: String = "",
+    var idToken: String = "",
 
     @Column(name = "last_login_at")
     var lastLoginAt: LocalDateTime = LocalDateTime.now()

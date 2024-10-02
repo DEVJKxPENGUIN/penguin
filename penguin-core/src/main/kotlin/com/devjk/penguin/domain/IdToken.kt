@@ -27,8 +27,8 @@ data class IdToken(
         val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
         val payloadMap = JsonHelper.fromJson(payload, Map::class.java)
         this.aud = payloadMap["aud"] as String
-        this.exp = payloadMap["exp"] as String
-        this.iat = payloadMap["iat"] as String
+        this.exp = (payloadMap["exp"] as Int).toString()
+        this.iat = (payloadMap["iat"] as Int).toString()
         this.iss = payloadMap["iss"] as String
         this.sub = payloadMap["sub"] as String
         this.email = payloadMap["email"] as String

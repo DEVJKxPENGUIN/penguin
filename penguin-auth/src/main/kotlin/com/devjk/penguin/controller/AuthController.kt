@@ -61,7 +61,7 @@ class AuthController(
         authService.verifyStateToken(state)
         val idToken = authService.getOpenId(code)
         val user = authService.getRegisteredUser(idToken)
-        authService.login(user)
+        authService.login(user, idToken)
         val rd = authService.getRedirectSession()
 
         return ResponseEntity

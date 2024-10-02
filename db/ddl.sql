@@ -7,7 +7,7 @@ CREATE TABLE penguin.user
     id            bigint auto_increment not null,
     nickname      varchar(255)          not null,
     email         varchar(255)          not null,
-    id_token      varchar(255)          null,
+    id_token      text                  null,
     last_login_at timestamp             null,
     created_at    timestamp             not null,
     updated_at    timestamp             not null,
