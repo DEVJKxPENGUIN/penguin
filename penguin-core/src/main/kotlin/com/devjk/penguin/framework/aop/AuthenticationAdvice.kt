@@ -1,6 +1,7 @@
 package com.devjk.penguin.framework.aop
 
-import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.AuthUser
+import com.devjk.penguin.domain.IdToken
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.utils.Profiles
 import jakarta.servlet.http.HttpServletRequest
@@ -42,10 +43,11 @@ class AuthenticationAdvice(
         method.parameterAnnotations.forEachIndexed { index, annotations ->
             annotations.forEach { annotation ->
                 if (annotation is PenguinUser) {
-                    val userInfo = getAuthorizationHeader()
-                    var user: User? = null
-                    if (!userInfo.isNullOrBlank()) {
-                        user = User.fromJsonEncoded(userInfo)
+                    val idTokenStr = getAuthorizationHeader()
+                    var user: AuthUser? = null
+                    if (!idTokenStr.isNullOrBlank()) {
+                        val token = IdToken.from(idTokenStr)
+                        user = AuthUser(token.email)
                     }
                     args[index] = user
                 }

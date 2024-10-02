@@ -1,5 +1,6 @@
 package com.devjk.penguin.controller
 
+import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.framework.common.BaseResponse
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
@@ -25,10 +26,10 @@ class AuthController(
 
     @GetMapping("/auth")
     fun auth(alwaysSuccess: Boolean = false): ResponseEntity<*> {
-        val userInfo: String?
+        val user: User?
         try {
-            userInfo = authService.getUserAuthorization()
-            userInfo ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+            user = authService.getUserAuthorization()
+            user ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
         } catch (e: Exception) {
             if (alwaysSuccess) {
                 return ResponseEntity.ok().body(BaseResponse.success())
@@ -37,7 +38,7 @@ class AuthController(
         }
 
         return ResponseEntity.ok()
-            .header("Authorization", "Bearer $userInfo")
+            .header("Authorization", "Bearer ${user.idToken}")
             .body(BaseResponse.success())
     }
 
@@ -60,12 +61,12 @@ class AuthController(
         authService.verifyStateToken(state)
         val idToken = authService.getOpenId(code)
         val user = authService.getRegisteredUser(idToken)
-        val userInfo = authService.login(user)
+        authService.login(user, idToken)
         val rd = authService.getRedirectSession()
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
-            .header("Authorization", "Bearer $userInfo")
+            .header("Authorization", "Bearer $idToken")
             .header("Location", rd)
             .body(
                 BaseResponse.success(

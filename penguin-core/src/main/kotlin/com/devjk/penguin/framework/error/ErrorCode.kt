@@ -12,5 +12,6 @@ enum class ErrorCode(
     INTERNAL_SERVER(HttpStatus.INTERNAL_SERVER_ERROR, -2, "Internal Server Error"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, -3, "cannot find valid token"),
     INVALID_STATETOKEN(HttpStatus.BAD_REQUEST, -4, "invalid state token"),
+    UNREGISTERED_USER(HttpStatus.UNAUTHORIZED, -5, "unregistered user"),
     ;
 }
