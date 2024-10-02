@@ -1,6 +1,7 @@
 package com.devjk.penguin.controller;
 
 import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.AuthUser
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.utils.UrlUtils
 import org.springframework.stereotype.Controller
@@ -12,7 +13,7 @@ class WelcomeController {
 
     @GetMapping("/")
     fun welcome(
-        @PenguinUser user: User?,
+        @PenguinUser user: AuthUser?,
         model: Model
     ): String {
         model.addAttribute("title", "정자동 펭귄마을")

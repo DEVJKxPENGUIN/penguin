@@ -31,11 +31,6 @@ class User(
 
     companion object {
         const val SESSION_TIME = 60L * 60L
-
-        fun fromJsonEncoded(str: String): User {
-            val userJson = String(Base64.getUrlDecoder().decode(str))
-            return JsonHelper.fromJson(userJson, User::class.java)
-        }
     }
 
     @JsonIgnore
