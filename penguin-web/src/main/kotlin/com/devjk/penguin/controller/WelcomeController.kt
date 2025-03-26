@@ -15,7 +15,7 @@ class WelcomeController {
         @PenguinUser user: AuthUser?,
         model: Model
     ): String {
-        model.addAttribute("title", "정자동 펭귄마을")
+        model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히는 일해요!")
         user?.let {
             model.addAttribute("user", it)
