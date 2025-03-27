@@ -1,12 +1,11 @@
 package com.devjk.penguin.db.entity
 
+import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.framework.common.BaseEntity
-import com.devjk.penguin.utils.JsonHelper
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.io.Serializable
 import java.time.LocalDateTime
-import java.util.*
 
 @Entity
 @Table(name = "user")
@@ -21,6 +20,10 @@ class User(
 
     @Column(name = "email")
     val email: String = "",
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    val role: Role = Role.NORMAL,
 
     @Column(name = "id_token")
     var idToken: String = "",
@@ -40,5 +43,9 @@ class User(
 
     fun renewSession() {
         lastLoginAt = LocalDateTime.now()
+    }
+
+    fun hasRole(role: Role): Boolean {
+        return this.role.isHigherOrEqualThan(role)
     }
 }

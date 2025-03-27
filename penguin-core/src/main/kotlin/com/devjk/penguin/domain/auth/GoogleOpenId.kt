@@ -1,4 +1,4 @@
-package com.devjk.penguin.domain
+package com.devjk.penguin.domain.auth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

@@ -1,4 +1,4 @@
-package com.devjk.penguin.domain
+package com.devjk.penguin.domain.auth
 
 import com.devjk.penguin.utils.JsonHelper
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -12,13 +12,13 @@ data class IdToken(
     var iss: String = "",
     var sub: String = "",
     var email: String = "",
+    var role: String = "",
     var origin: String = ""
 ) {
 
     companion object {
-
-        fun from(token: String): IdToken {
-            return IdToken(origin = token)
+        fun from(token: String, role: Role = Role.GUEST): IdToken {
+            return IdToken(origin = token, role = role.name)
         }
     }
 

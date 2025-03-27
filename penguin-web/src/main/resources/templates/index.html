@@ -13,9 +13,11 @@
       <div class="mx-2"><h1 class="text-3xl font-bold" th:text="${title}"></h1></div>
     </div>
     <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
-      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()" th:if="${isLogin}">로그아웃
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()"
+           th:if="${user.authenticated()}">로그아웃
       </div>
-      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()" th:unless="${isLogin}">로그인
+      <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()"
+           th:unless="${user.isGuest()}">로그인
       </div>
       <div class="mx-2" th:text="${user.email}"></div>
     </div>

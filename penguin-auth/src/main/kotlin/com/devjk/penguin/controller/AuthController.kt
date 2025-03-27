@@ -1,9 +1,8 @@
 package com.devjk.penguin.controller
 
 import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.framework.common.BaseResponse
-import com.devjk.penguin.framework.error.ErrorCode
-import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -24,15 +23,19 @@ class AuthController(
         const val AUTH_REDIRECT = "redirect"
     }
 
+    /**
+     * nginx ingress auth 에서 항상 검증한다.
+     */
     @GetMapping("/auth")
-    fun auth(alwaysSuccess: Boolean = false): ResponseEntity<*> {
-        val user: User?
+    fun auth(alwaysSuccess: Boolean = false, role: Role = Role.NORMAL): ResponseEntity<*> {
+        val user: User
         try {
-            user = authService.getUserAuthorization()
-            user ?: throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+            user = authService.getUserAuthorization(role)
         } catch (e: Exception) {
             if (alwaysSuccess) {
-                return ResponseEntity.ok().body(BaseResponse.success())
+                return ResponseEntity.ok()
+                    .header("Authorization", "Bearer ")
+                    .body(BaseResponse.success())
             }
             throw e
         }
@@ -59,9 +62,9 @@ class AuthController(
         log.info("/callback called -- state: $state, code: $code")
 
         authService.verifyStateToken(state)
-        val idToken = authService.getOpenId(code)
-        val user = authService.getRegisteredUser(idToken)
-        authService.login(user, idToken)
+        val oidcToken = authService.getOpenId(code)
+        val user = authService.getRegisteredUser(oidcToken.email)
+        val idToken = authService.login(user)
         val rd = authService.getRedirectSession()
 
         return ResponseEntity

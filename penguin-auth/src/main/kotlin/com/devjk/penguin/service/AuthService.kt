@@ -5,10 +5,12 @@ import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
-import com.devjk.penguin.domain.GoogleOpenId
-import com.devjk.penguin.domain.IdToken
+import com.devjk.penguin.domain.auth.GoogleOpenId
+import com.devjk.penguin.domain.auth.IdToken
+import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
+import com.devjk.penguin.utils.JwtHelper
 import com.devjk.penguin.utils.UrlUtils
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
@@ -30,20 +32,24 @@ class AuthService(
     private val clientId: String,
     @Value("\${google-client-secret}")
     private val clientSecret: String,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val jwtHelper: JwtHelper
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    fun getUserAuthorization(): User? {
+    fun getUserAuthorization(role: Role): User {
         session.getAttribute(AUTH_VALUE)?.let {
             val user = it as User
+            if (!user.hasRole(role)) {
+                throw BaseException(ErrorCode.NO_AUTHORIZED_ROLE, "접근권한이 없습니다 : ${role.name}")
+            }
             if (user.isNotExpired()) {
                 user.renewSession()
                 session.setAttribute(AUTH_VALUE, user)
                 return user
             }
         }
-        return null
+        throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
     }
 
     fun setStateToken(): String {
@@ -63,32 +69,18 @@ class AuthService(
     }
 
     fun makeGoogleLoginUrl(state: String): String {
-        val sb = StringBuilder("https://accounts.google.com/o/oauth2/v2/auth?")
-        sb.append("response_type=code")
-        sb.append("&client_id=${URLEncoder.encode(clientId, StandardCharsets.UTF_8)}")
-        sb.append("&scope=openid%20email")
-        sb.append(
-            "&redirect_uri=${
-                URLEncoder.encode(
-                    UrlUtils.redirectUrl(),
-                    StandardCharsets.UTF_8
-                )
-            }"
-        )
-        sb.append("&state=${URLEncoder.encode(state, StandardCharsets.UTF_8)}")
-        sb.append(
-            "&login_hint=${
-                URLEncoder.encode(
-                    "dfjung4254@gmail.com",
-                    StandardCharsets.UTF_8
-                )
-            }"
-        )
-        return sb.toString()
+        return """
+            https://accounts.google.com/o/oauth2/v2/auth?
+            response_type=code
+            &client_id=${URLEncoder.encode(clientId, StandardCharsets.UTF_8)}
+            &scope=openid%20email
+            &redirect_uri=${URLEncoder.encode(UrlUtils.redirectUrl(), StandardCharsets.UTF_8)}
+            &state=${URLEncoder.encode(state, StandardCharsets.UTF_8)}
+        """.trimIndent()
     }
 
     fun verifyStateToken(state: String) {
-        var sessionState =
+        val sessionState =
             session.getAttribute(OAUTH_STATE) ?: throw BaseException(ErrorCode.INVALID_STATETOKEN)
         val storedState = sessionState as String
 
@@ -117,16 +109,20 @@ class AuthService(
             ?: throw BaseException(ErrorCode.UNAUTHORIZED)
     }
 
-    fun getRegisteredUser(idToken: IdToken): User {
-        return userRepository.findByEmail(idToken.email)
+    fun getRegisteredUser(email: String): User {
+        return userRepository.findByEmail(email)
             ?: throw BaseException(ErrorCode.UNREGISTERED_USER)
     }
 
-    fun login(user: User, idToken: IdToken) {
+    fun login(user: User): String {
         user.renewSession()
-        user.idToken = idToken.origin
+
+        val jwt = jwtHelper.create(user.email, user.role.name, user.nickName)
+        user.idToken = jwt
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)
+
+        return jwt
     }
 
     fun logout() {
