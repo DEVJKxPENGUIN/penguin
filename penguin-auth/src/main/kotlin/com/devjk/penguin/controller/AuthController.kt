@@ -49,11 +49,11 @@ class AuthController(
     fun start(rd: String?): ResponseEntity<*> {
         val state = authService.setStateToken()
         authService.setRedirectSession(rd)
-        val googleLoginUrl = authService.makeGoogleLoginUrl(state)
+        val oidcLoginUrl = authService.getOidcProviderLink(state)
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
-            .location(URI.create(googleLoginUrl))
+            .location(URI.create(oidcLoginUrl))
             .body(BaseResponse.success())
     }
 

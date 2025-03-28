@@ -12,5 +12,4 @@ class WebClientConfig {
             .builder()
             .build()
     }
-
 }
