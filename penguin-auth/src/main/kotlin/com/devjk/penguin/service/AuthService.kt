@@ -82,14 +82,6 @@ class AuthService(
             }"
         )
         sb.append("&state=${URLEncoder.encode(state, StandardCharsets.UTF_8)}")
-        sb.append(
-            "&login_hint=${
-                URLEncoder.encode(
-                    "dfjung4254@gmail.com",
-                    StandardCharsets.UTF_8
-                )
-            }"
-        )
         return sb.toString()
     }
 
