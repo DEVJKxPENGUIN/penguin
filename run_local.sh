@@ -6,6 +6,7 @@ RUN_MODULE=""
 RUN_DIRECTORY=""
 MODE="local"
 RUN_TYPE="spring" ## spring or npm
+GRADLE_TASK="bootRun"
 DB_HOST="localhost:43306"
 DB_USERNAME="root"
 DB_PASSWORD="develop"
@@ -45,6 +46,9 @@ while (("$#")); do
   if [ "-dev" = $1 ]; then
     MODE=dev
   fi
+  if [ "-test" = $1 ]; then
+    GRADLE_TASK=test
+  fi
   shift
 done
 
@@ -52,6 +56,9 @@ if [ ${RUN_TYPE} = "spring" ]; then
 
   # process run options
   ARGS="--stacktrace --debug --quiet"
+  if [ "${GRADLE_TASK}" = "test" ]; then
+    ARGS=""
+  fi
   if [ ${DEBUG} = true ]; then
     ARGS="${ARGS} --debug-jvm"
   fi
@@ -62,14 +69,17 @@ if [ ${RUN_TYPE} = "spring" ]; then
 
   # make full args
   # shellcheck disable=SC2089
-  FULL_ARGS="./gradlew ${CLEAN} $RUN_MODULE:bootRun ${ARGS} --args='--spring.profiles.active=${MODE}'"
+  FULL_ARGS="./gradlew ${CLEAN} $RUN_MODULE:$GRADLE_TASK ${ARGS} --args='--spring.profiles.active=${MODE}'"
+  if [ "${GRADLE_TASK}" = "test" ]; then
+    FULL_ARGS="./gradlew ${CLEAN} $RUN_MODULE:$GRADLE_TASK ${ARGS}"
+  fi
 
   echo RUN_MODULE : ${RUN_MODULE}
   echo ARGS : "${ARGS}"
   echo MODE : ${MODE}
   echo FULL_ARGS : "${FULL_ARGS}"
 
-  # bootRun
+  # gradle run
   # shellcheck disable=SC2090
   export DB_HOST=${DB_HOST}
   export DB_USERNAME=${DB_USERNAME}

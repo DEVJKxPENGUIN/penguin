@@ -1,6 +1,8 @@
 package com.devjk.penguin.controller
 
 import com.devjk.penguin.PenguinTester
+import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
+import com.devjk.penguin.db.entity.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -46,6 +48,51 @@ class AuthTest : PenguinTester() {
         val jwt = authorization?.substring(7)
         assertThat(jwt).isNotBlank()
         assertThat(jwt).isEqualTo(testUser.idToken)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        로그인 되어있는 유저가 /auth 요청 시 성공응답과 함께 Authorization jwt 를 받는다.
+        - 이때 유저의 세션값은 갱신된다 (lastLoginAt)
+    """
+    )
+    fun auth2() {
+        testLogin(testUser)
+
+        val loginAt = testUser.lastLoginAt
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        val sessionUser = session.getAttribute(AUTH_VALUE) as User
+        assertThat(sessionUser.lastLoginAt).isAfter(loginAt)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        로그인 되어있는 NORMAL 유저가 /auth?role=SUPER 요청 시 <403> ErrorCode.NO_AUTHORIZED_ROLE 오류를 받는다.
+    """
+    )
+    fun auth3() {
+        testLogin(testUser)
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth?role=SUPER")
+        )
+            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .andReturn()
+            .response
+
+        println("result : ${result.contentAsString}")
     }
 
     @Test

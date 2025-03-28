@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
@@ -65,6 +67,49 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        testLogging {
+            // test jvm의 standard out and standard error을 console에 출력한다.
+            events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+            showCauses = true
+            showExceptions = true
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
+        }
+
+        reports.html.required.set(true)
+
+        var totalTests = 0
+        var totalPassed = 0
+        var totalFailed = 0
+        var totalSkipped = 0
+
+        afterTest(KotlinClosure2<TestDescriptor, TestResult, Any>({ _, result ->
+            totalTests++
+            when (result.resultType) {
+                TestResult.ResultType.SUCCESS -> totalPassed++
+                TestResult.ResultType.FAILURE -> totalFailed++
+                TestResult.ResultType.SKIPPED -> totalSkipped++
+                else -> {}
+            }
+        }))
+
+        afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ desc, _ ->
+            if (desc.parent == null) { // root suite
+                val successRate = if (totalTests > 0) (totalPassed * 100) / totalTests else 0
+                println("\n📊 Test Summary:")
+                println("✅ PASSED : $totalPassed")
+                println("❌ FAILED : $totalFailed")
+                println("⏭️ SKIPPED: $totalSkipped")
+                println("🧪 TOTAL  : $totalTests")
+                println("📈 SUCCESS RATE: $successRate%\n")
+
+                val reportFile = reports.html.outputLocation.get().asFile.resolve("index.html")
+                if (reportFile.exists()) {
+                    println("📂 Test report: file://$reportFile")
+                }
+            }
+        }))
+
     }
 
     configurations {

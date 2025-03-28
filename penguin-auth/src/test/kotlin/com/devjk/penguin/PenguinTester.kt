@@ -54,6 +54,7 @@ class PenguinTester {
     }
 
     fun testLogin(user: User) {
+        user.renewSession()
         session.setAttribute(AUTH_VALUE, user)
     }
 }
