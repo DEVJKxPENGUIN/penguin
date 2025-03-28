@@ -49,6 +49,8 @@ subprojects {
         implementation("org.apache.commons:commons-lang3")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("com.h2database:h2")
+        testImplementation("com.github.codemonstur:embedded-redis:1.4.2")
         implementation("com.mysql:mysql-connector-j:9.0.0")
     }
 

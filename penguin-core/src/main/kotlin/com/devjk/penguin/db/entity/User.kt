@@ -8,10 +8,11 @@ import java.io.Serializable
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 @EntityListeners
 class User(
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0,
 

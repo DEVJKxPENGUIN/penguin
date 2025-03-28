@@ -1,0 +1,54 @@
+package com.devjk.penguin
+
+import com.devjk.penguin.config.TestConfig
+import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
+import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.db.repository.UserRepository
+import com.devjk.penguin.domain.auth.Role
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.springframework.mock.web.MockHttpSession
+import org.springframework.test.web.servlet.MockMvc
+
+@SpringBootTest
+@Import(TestConfig::class)
+@AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+class PenguinTester {
+
+    @Autowired
+    lateinit var session: MockHttpSession
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var userRepository: UserRepository
+
+    lateinit var testUser: User
+
+    @BeforeEach
+    fun setup() {
+        testUser =
+            createTestUser("devjk_localtest", "devjk_localtest@penguintribe.net", Role.NORMAL)
+        userRepository.save(testUser)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        userRepository.deleteAll()
+    }
+
+    fun createTestUser(nickName: String, email: String, role: Role): User {
+        return User(nickName = nickName, email = email, role = role)
+    }
+
+    fun testLogin(user: User) {
+        session.setAttribute(AUTH_VALUE, user)
+    }
+}
