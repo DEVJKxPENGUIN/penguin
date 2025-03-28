@@ -69,14 +69,28 @@ class AuthService(
     }
 
     fun makeGoogleLoginUrl(state: String): String {
-        return """
-            https://accounts.google.com/o/oauth2/v2/auth?
-            response_type=code
-            &client_id=${URLEncoder.encode(clientId, StandardCharsets.UTF_8)}
-            &scope=openid%20email
-            &redirect_uri=${URLEncoder.encode(UrlUtils.redirectUrl(), StandardCharsets.UTF_8)}
-            &state=${URLEncoder.encode(state, StandardCharsets.UTF_8)}
-        """.trimIndent()
+        val sb = StringBuilder("https://accounts.google.com/o/oauth2/v2/auth?")
+        sb.append("response_type=code")
+        sb.append("&client_id=${URLEncoder.encode(clientId, StandardCharsets.UTF_8)}")
+        sb.append("&scope=openid%20email")
+        sb.append(
+            "&redirect_uri=${
+                URLEncoder.encode(
+                    UrlUtils.redirectUrl(),
+                    StandardCharsets.UTF_8
+                )
+            }"
+        )
+        sb.append("&state=${URLEncoder.encode(state, StandardCharsets.UTF_8)}")
+        sb.append(
+            "&login_hint=${
+                URLEncoder.encode(
+                    "dfjung4254@gmail.com",
+                    StandardCharsets.UTF_8
+                )
+            }"
+        )
+        return sb.toString()
     }
 
     fun verifyStateToken(state: String) {

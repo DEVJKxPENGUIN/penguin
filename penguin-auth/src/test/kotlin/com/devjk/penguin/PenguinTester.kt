@@ -5,6 +5,7 @@ import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
 import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.utils.JwtHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,6 +31,9 @@ class PenguinTester {
     @Autowired
     lateinit var userRepository: UserRepository
 
+    @Autowired
+    lateinit var jwtHelper: JwtHelper
+
     lateinit var testUser: User
 
     @BeforeEach
@@ -45,7 +49,8 @@ class PenguinTester {
     }
 
     fun createTestUser(nickName: String, email: String, role: Role): User {
-        return User(nickName = nickName, email = email, role = role)
+        val jwt = jwtHelper.create(nickName, email, role.name)
+        return User(nickName = nickName, email = email, role = role, idToken = jwt)
     }
 
     fun testLogin(user: User) {

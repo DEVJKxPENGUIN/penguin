@@ -51,6 +51,8 @@ subprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("com.h2database:h2")
         testImplementation("com.github.codemonstur:embedded-redis:1.4.2")
+        testImplementation("org.assertj:assertj-core:3.27.3")
+        testImplementation("org.mockito:mockito-inline:4.11.0")
         implementation("com.mysql:mysql-connector-j:9.0.0")
     }
 

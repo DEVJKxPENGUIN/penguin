@@ -1,6 +1,7 @@
 package com.devjk.penguin.controller
 
 import com.devjk.penguin.PenguinTester
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -21,7 +22,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 class AuthTest : PenguinTester() {
 
     @Test
-    @DisplayName("로그인 되어있는 유저가 /auth 요청 시 성공응답과 함께 Authorization jwt 를 받는다.")
+    @DisplayName(
+        """
+        로그인 되어있는 유저가 /auth 요청 시 성공응답과 함께 Authorization jwt 를 받는다.
+        - jwt 는 Bearer 로 시작한다.
+        - jwt 는 user.idToken 과 동일하다.
+    """
+    )
     fun auth1() {
         testLogin(testUser)
 
@@ -30,11 +37,15 @@ class AuthTest : PenguinTester() {
                 .get("/auth")
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.header().exists("Authorization"))
             .andReturn()
+            .response
 
-        println("mvcResult : ${result.response.getHeaders("Authorization")}")
-
+        assertThat(result.getHeader("Authorization")).isNotBlank()
+        val authorization = result.getHeader("Authorization")
+        assertThat(authorization).startsWith("Bearer ")
+        val jwt = authorization?.substring(7)
+        assertThat(jwt).isNotBlank()
+        assertThat(jwt).isEqualTo(testUser.idToken)
     }
 
     @Test

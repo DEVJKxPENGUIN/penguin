@@ -26,7 +26,7 @@ class User(
     @Enumerated(EnumType.STRING)
     val role: Role = Role.NORMAL,
 
-    @Column(name = "id_token")
+    @Column(name = "id_token", columnDefinition = "text")
     var idToken: String = "",
 
     @Column(name = "last_login_at")
