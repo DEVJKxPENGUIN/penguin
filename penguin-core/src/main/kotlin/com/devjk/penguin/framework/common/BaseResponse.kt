@@ -1,14 +1,14 @@
 package com.devjk.penguin.framework.common
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.devjk.penguin.framework.error.ErrorCode
+import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class BaseResponse<T>(
     val code: String,
     val message: String,
     val data: T? = null
-) {
+){
     companion object {
         fun success(): BaseResponse<Unit> {
             return BaseResponse("0", "OK")

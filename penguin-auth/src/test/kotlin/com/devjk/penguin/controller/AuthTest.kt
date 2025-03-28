@@ -3,11 +3,15 @@ package com.devjk.penguin.controller
 import com.devjk.penguin.PenguinTester
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.framework.error.ErrorCode
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.time.LocalDateTime
 
 
 /**
@@ -92,19 +96,124 @@ class AuthTest : PenguinTester() {
             .andReturn()
             .response
 
-        println("result : ${result.contentAsString}")
+        val baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.NO_AUTHORIZED_ROLE.value.toString())
     }
 
     @Test
-    fun start() {
+    @DisplayName(
+        """
+        로그인 되어있는 유저의 세션타임이 만료되면  /auth 요청 시 <401> ErrorCode.UNAUTHORIZED 오류를 받는다.
+    """
+    )
+    fun auth4() {
+        testLogin(testUser)
+        testUser.lastLoginAt = LocalDateTime.now().minusSeconds(User.SESSION_TIME)
+        session.setAttribute(AUTH_VALUE, testUser)
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth")
+        )
+            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+            .andReturn()
+            .response
+
+        val baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.UNAUTHORIZED.value.toString())
     }
 
     @Test
-    fun callback() {
+    @DisplayName(
+        """
+        로그인을 하지 않으면 /auth 요청 시 <401> ErrorCode.UNAUTHORIZED 오류를 받는다.
+    """
+    )
+    fun auth5() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth")
+        )
+            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+            .andReturn()
+            .response
+
+        val baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.UNAUTHORIZED.value.toString())
     }
 
     @Test
-    fun logout() {
+    @DisplayName(
+        """
+        로그인을 하지 않았으나 /auth?alwaysSuccess=true 로 요청 시 <200> 과 빈 Authorized 값을 받는다.
+    """
+    )
+    fun auth6() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth?alwaysSuccess=true")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        assertThat(result.getHeader("Authorization")).isNotBlank()
+        val authorization = result.getHeader("Authorization")
+        assertThat(authorization).startsWith("Bearer ")
+        val jwt = authorization?.substring(7)
+        assertThat(jwt).isBlank()
+    }
+
+    @Test
+    @DisplayName(
+        """
+        NORMAL 유저로 로그인을 했지만 /auth?alwaysSuccess=true&role=SUPER 로 요청 시 <200> 과 빈 Authorized 값을 받는다.
+    """
+    )
+    fun auth7() {
+        testLogin(testUser)
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth?alwaysSuccess=true&role=SUPER")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        assertThat(result.getHeader("Authorization")).isNotBlank()
+        val authorization = result.getHeader("Authorization")
+        assertThat(authorization).startsWith("Bearer ")
+        val jwt = authorization?.substring(7)
+        assertThat(jwt).isBlank()
+    }
+
+    @Test
+    @DisplayName(
+        """
+        SUPER 유저로 로그인을 하고 /auth?role=SUPER 로 요청 시 <200> 과 Authorized jwt 값을 받는다.
+    """
+    )
+    fun auth8() {
+        testUser.role = Role.SUPER
+        testLogin(testUser)
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth?role=SUPER")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        assertThat(result.getHeader("Authorization")).isNotBlank()
+        val authorization = result.getHeader("Authorization")
+        assertThat(authorization).startsWith("Bearer ")
+        val jwt = authorization?.substring(7)
+        assertThat(jwt).isNotBlank()
+        assertThat(jwt).isEqualTo(testUser.idToken)
     }
 
 }

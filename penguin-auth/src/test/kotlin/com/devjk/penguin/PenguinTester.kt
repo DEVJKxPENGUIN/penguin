@@ -6,6 +6,8 @@ import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
 import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.utils.JwtHelper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +35,9 @@ class PenguinTester {
 
     @Autowired
     lateinit var jwtHelper: JwtHelper
+
+    @Autowired
+    lateinit var mapper: ObjectMapper
 
     lateinit var testUser: User
 
