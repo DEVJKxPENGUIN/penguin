@@ -17,7 +17,7 @@
            th:if="${user.authenticated()}">로그아웃
       </div>
       <div class="mx-2 text-cyan-500 cursor-pointer" onclick="login()"
-           th:unless="${user.isGuest()}">로그인
+           th:if="${user.isGuest()}">로그인
       </div>
       <div class="mx-2" th:text="${user.email}"></div>
     </div>
