@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: penguin-auth
-          image: 10.105.58.187:5000/penguin-auth:89
+          image: 10.105.58.187:5000/penguin-auth:91
           imagePullPolicy: Always
           envFrom:
           - secretRef:
