@@ -5,6 +5,7 @@ import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
 import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.auth.AuthUser
 import com.devjk.penguin.domain.auth.GoogleOpenId
 import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.framework.error.ErrorCode
@@ -469,7 +470,7 @@ class AuthTest : PenguinTester() {
             - SUPER : X
         """
     )
-    fun authAdvice() {
+    fun authAdvice1() {
         testLogin(testUser)
 
         val authResult = mockMvc.perform(
@@ -493,7 +494,6 @@ class AuthTest : PenguinTester() {
         assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testUser.email)
         assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testUser.role.toString())
         assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testUser.nickName)
-
 
         result = mockMvc.perform(
             MockMvcRequestBuilders
@@ -520,6 +520,128 @@ class AuthTest : PenguinTester() {
 
         baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
         assertThat(baseResponse["code"]).isEqualTo(ErrorCode.NO_AUTHORIZED_ROLE.value.toString())
+    }
+
+    @Test
+    @DisplayName(
+        """
+            비로그인 상태 + @PenguinUser 통과테스트
+            - GUEST : O
+            - NORMAL : X
+            - SUPER : X
+        """
+    )
+    fun authAdvice2() {
+
+        val authResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth?alwaysSuccess=true")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        var result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/guest")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        val guest = AuthUser.ofGuest()
+        var baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(guest.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(guest.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(guest.nickname)
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/normal")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.NO_AUTHORIZED_ROLE.value.toString())
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/super")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.NO_AUTHORIZED_ROLE.value.toString())
+    }
+
+    @Test
+    @DisplayName(
+        """
+            SUPER 로그인 상태 + @PenguinUser 통과테스트
+            - GUEST : O
+            - NORMAL : O
+            - SUPER : O
+        """
+    )
+    fun authAdvice3() {
+        testLogin(testSuperUser)
+
+        val authResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        var result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/guest")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        var baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testSuperUser.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testSuperUser.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testSuperUser.nickName)
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/normal")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testSuperUser.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testSuperUser.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testSuperUser.nickName)
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/super")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testSuperUser.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testSuperUser.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testSuperUser.nickName)
     }
 
 }

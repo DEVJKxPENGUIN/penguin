@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
 import org.springframework.mock.web.MockHttpSession
 import org.springframework.test.web.servlet.MockMvc
@@ -46,11 +45,16 @@ class PenguinTester {
 
     lateinit var testUser: User
 
+    lateinit var testSuperUser: User
+
     @BeforeEach
     fun setup() {
         testUser =
             createTestUser("devjk_localtest", "devjk_localtest@penguintribe.net", Role.NORMAL)
+        testSuperUser =
+            createTestUser("devjk_supertest", "devjk_supertest@penguintribe.net", Role.SUPER)
         userRepository.save(testUser)
+        userRepository.save(testSuperUser)
     }
 
     @AfterEach
