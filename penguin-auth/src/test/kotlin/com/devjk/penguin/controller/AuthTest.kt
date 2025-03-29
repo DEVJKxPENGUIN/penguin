@@ -460,4 +460,66 @@ class AuthTest : PenguinTester() {
         assertThat(location).isEqualTo(expectedLocation)
     }
 
+    @Test
+    @DisplayName(
+        """
+            NORMAL 로그인 + @PenguinUser 통과테스트
+            - GUEST : O
+            - NORMAL : O
+            - SUPER : X
+        """
+    )
+    fun authAdvice() {
+        testLogin(testUser)
+
+        val authResult = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/auth")
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        var result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/guest")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        var baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testUser.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testUser.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testUser.nickName)
+
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/normal")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testUser.email)
+        assertThat((baseResponse["data"] as Map<*, *>)["role"]).isEqualTo(testUser.role.toString())
+        assertThat((baseResponse["data"] as Map<*, *>)["nickname"]).isEqualTo(testUser.nickName)
+
+        result = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/test/auth/advice/super")
+                .header("Authorization", authResult.getHeader("Authorization"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .andReturn()
+            .response
+
+        baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
+        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.NO_AUTHORIZED_ROLE.value.toString())
+    }
+
 }

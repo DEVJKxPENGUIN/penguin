@@ -19,4 +19,4 @@ d6247f71e3716c46e5121c7f1aae5119015aa980131f41c05b05c475b3a37a59
 
 spring:
   profiles:
-    active: "local"
+    active: "local,test"

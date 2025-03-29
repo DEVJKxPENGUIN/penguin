@@ -1,4 +1,4 @@
-package com.devjk.penguin.framework.aop
+package com.devjk.penguin.framework.custom
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware

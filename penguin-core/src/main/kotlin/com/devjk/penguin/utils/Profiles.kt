@@ -1,6 +1,6 @@
 package com.devjk.penguin.utils
 
-import com.devjk.penguin.framework.aop.ApplicationContextProvider
+import com.devjk.penguin.framework.custom.ApplicationContextProvider
 
 class Profiles {
 

@@ -1,4 +1,4 @@
-package com.devjk.penguin.framework.aop
+package com.devjk.penguin.framework.custom
 
 import com.devjk.penguin.framework.common.BaseResponse
 import com.devjk.penguin.framework.error.ErrorCode
