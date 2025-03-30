@@ -5,26 +5,22 @@ class UrlUtils {
     companion object {
 
         fun loginUrl(): String {
-            return if (Profiles.isLocal()) {
-                "http://localhost:8082/start"
-            } else {
-                "https://auth.devjk.me/start"
-            }
+            return "${serverAuth()}/start"
         }
 
         fun logoutUrl(): String {
-            return if (Profiles.isLocal()) {
-                "http://localhost:8082/logout"
-            } else {
-                "https://auth.devjk.me/logout"
-            }
+            return "${serverAuth()}/logout"
         }
 
         fun redirectUrl(): String {
+            return "${serverAuth()}/callback"
+        }
+
+        fun serverAuth(): String {
             return if (Profiles.isLocal()) {
-                "http://localhost:8082/callback"
+                "http://localhost:8082"
             } else {
-                "https://auth.devjk.me/callback"
+                "https://auth.devjk.me"
             }
         }
 

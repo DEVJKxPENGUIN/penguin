@@ -1,4 +1,0 @@
-{
-  "issuer": "https://auth.devjk.me",
-  "jwks_uri": "https://auth.devjk.me/.well-known/jwks.json"
-}
