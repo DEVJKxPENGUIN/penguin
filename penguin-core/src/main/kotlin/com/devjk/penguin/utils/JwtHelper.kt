@@ -34,6 +34,8 @@ class JwtHelper(
         return Jwts.builder()
             .subject(email)
             .claim("nickname", nickname)
+            .claim("aud", "penguintribe")
+            .claim("iss", "https://auth.devjk.me")
             .claim("role", role)
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plus(1, ChronoUnit.HOURS)))
