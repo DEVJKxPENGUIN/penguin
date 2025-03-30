@@ -18,15 +18,20 @@ class JwtHelper(
     @Value("\${jwt-private-key}")
     private val privateKey: String,
     @Value("\${jwt-public-key}")
-    private val publicKey: String
+    private val publicKey: String,
 ) {
+    companion object {
+        const val KID = "penguin-key-1"
+        const val AUD = "penguintribe"
+        const val KTY = "RSA"
+    }
 
     fun create(email: String, role: String, nickname: String): String {
         val key = privateKey
             .replace("-----BEGIN PRIVATE KEY-----", "")
             .replace("-----END PRIVATE KEY-----", "")
             .replace("\\s".toRegex(), "")
-        val keyFactory = KeyFactory.getInstance("RSA")
+        val keyFactory = KeyFactory.getInstance(KTY)
         val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
         val privateKey = keyFactory.generatePrivate(keySpec) as PrivateKey
 
@@ -34,11 +39,11 @@ class JwtHelper(
         return Jwts.builder()
             .subject(email)
             .header()
-            .add("kid", "penguin-key-1")
+            .add("kid", KID)
             .and()
             .claim("nickname", nickname)
-            .claim("aud", "penguintribe")
-            .claim("iss", "https://auth.devjk.me")
+            .claim("aud", AUD)
+            .claim("iss", UrlUtils.serverAuth())
             .claim("role", role)
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plus(1, ChronoUnit.HOURS)))
@@ -51,7 +56,7 @@ class JwtHelper(
             .replace("-----BEGIN PUBLIC KEY-----", "")
             .replace("-----END PUBLIC KEY-----", "")
             .replace("\\s".toRegex(), "")
-        val keyFactory = KeyFactory.getInstance("RSA")
+        val keyFactory = KeyFactory.getInstance(KTY)
         val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(key))
         val publicKey = keyFactory.generatePublic(keySpec) as PublicKey
 
