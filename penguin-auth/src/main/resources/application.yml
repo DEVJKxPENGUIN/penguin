@@ -5,10 +5,6 @@ spring:
       "prod": "prod, common"
 ---
 spring:
-  mvc:
-    contentnegotiation:
-      media-types:
-        json: application/json
   config:
     activate:
       on-profile: "common"
