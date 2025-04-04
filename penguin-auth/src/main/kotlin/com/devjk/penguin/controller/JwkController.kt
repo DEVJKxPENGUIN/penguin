@@ -42,20 +42,20 @@ class JwkController {
 }
 
 data class OpenIdConfigurationResponse(
-    private val issuer: String,
-    private val jwks_uri: String,
-    private val id_token_signing_alg_values_supported: List<String>
+    val issuer: String,
+    val jwks_uri: String,
+    val id_token_signing_alg_values_supported: List<String>
 )
 
 data class JwksJsonResponse(
-    private val keys: List<Jwk>
+    val keys: List<Jwk>
 )
 
 data class Jwk(
-    private val kty: String,
-    private val kid: String,
-    private val use: String,
-    private val alg: String,
-    private val n: String,
-    private val e: String
+    val kty: String,
+    val kid: String,
+    val use: String,
+    val alg: String,
+    val n: String,
+    val e: String
 )
