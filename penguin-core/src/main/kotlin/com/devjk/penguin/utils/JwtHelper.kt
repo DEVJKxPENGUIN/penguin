@@ -77,4 +77,20 @@ class JwtHelper(
         val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
         return keyFactory.generatePrivate(keySpec) as RSAPrivateKey
     }
+
+    fun getJwksN(): String {
+        val publicKey = loadRsaPublicKey()
+        val nBytes = publicKey.modulus.toByteArray().let {
+            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+        }
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(nBytes)
+    }
+
+    fun getJwksE(): String {
+        val publicKey = loadRsaPublicKey()
+        val eBytes = publicKey.publicExponent.toByteArray().let {
+            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+        }
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(eBytes)
+    }
 }
