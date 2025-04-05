@@ -7,7 +7,7 @@ data class AuthUser(
 ) {
     companion object {
         fun ofGuest(): AuthUser {
-            return AuthUser("GUEST_USER", Role.GUEST, "GUEST_USER")
+            return AuthUser("anonymous", Role.GUEST, "anonymous")
         }
     }
 

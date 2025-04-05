@@ -20,6 +20,8 @@
            th:if="${user.isGuest()}">로그인
       </div>
       <div class="mx-2" th:text="${user.email}"></div>
+      <div class="mx-2" >|</div>
+      <div class="mx-2" th:text="'[' + ${user.role.description()} + '] ' + ${user.nickname} + ' 님'"></div>
     </div>
   </div>
   <div class="body flex w-full h-full justify-center">
