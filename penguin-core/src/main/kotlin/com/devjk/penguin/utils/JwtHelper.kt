@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.KeyFactory
-import java.security.PrivateKey
-import java.security.PublicKey
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
@@ -27,14 +27,7 @@ class JwtHelper(
     }
 
     fun create(email: String, role: String, nickname: String): String {
-        val key = privateKey
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replace("\\s".toRegex(), "")
-        val keyFactory = KeyFactory.getInstance(KTY)
-        val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
-        val privateKey = keyFactory.generatePrivate(keySpec) as PrivateKey
-
+        val privateKey = loadRsaPrivateKey()
         val now = Instant.now()
         return Jwts.builder()
             .subject(email)
@@ -52,15 +45,8 @@ class JwtHelper(
     }
 
     fun getClaimsWithVerify(idToken: String): Claims? {
-        val key = publicKey
-            .replace("-----BEGIN PUBLIC KEY-----", "")
-            .replace("-----END PUBLIC KEY-----", "")
-            .replace("\\s".toRegex(), "")
-        val keyFactory = KeyFactory.getInstance(KTY)
-        val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(key))
-        val publicKey = keyFactory.generatePublic(keySpec) as PublicKey
-
         try {
+            val publicKey = loadRsaPublicKey()
             val jwt = Jwts.parser()
                 .verifyWith(publicKey)
                 .build()
@@ -72,4 +58,39 @@ class JwtHelper(
         }
     }
 
+    fun loadRsaPublicKey(): RSAPublicKey {
+        val key = publicKey
+            .replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
+            .replace("\\s".toRegex(), "")
+        val keyFactory = KeyFactory.getInstance(KTY)
+        val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(key))
+        return keyFactory.generatePublic(keySpec) as RSAPublicKey
+    }
+
+    fun loadRsaPrivateKey(): RSAPrivateKey {
+        val key = privateKey
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .replace("\\s".toRegex(), "")
+        val keyFactory = KeyFactory.getInstance(KTY)
+        val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
+        return keyFactory.generatePrivate(keySpec) as RSAPrivateKey
+    }
+
+    fun getJwksN(): String {
+        val publicKey = loadRsaPublicKey()
+        val nBytes = publicKey.modulus.toByteArray().let {
+            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+        }
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(nBytes)
+    }
+
+    fun getJwksE(): String {
+        val publicKey = loadRsaPublicKey()
+        val eBytes = publicKey.publicExponent.toByteArray().let {
+            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+        }
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(eBytes)
+    }
 }
