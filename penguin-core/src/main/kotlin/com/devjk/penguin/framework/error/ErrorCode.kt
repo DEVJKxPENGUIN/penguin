@@ -14,5 +14,6 @@ enum class ErrorCode(
     NO_AUTHORIZED_ROLE(HttpStatus.FORBIDDEN, -4, "no authorized role"),
     INVALID_STATETOKEN(HttpStatus.BAD_REQUEST, -5, "invalid state token"),
     UNREGISTERED_USER(HttpStatus.UNAUTHORIZED, -6, "unregistered user"),
+    INVALID_OIDC_PROVIDER(HttpStatus.BAD_REQUEST, -7, "invalid oidc provider"),
     ;
 }
