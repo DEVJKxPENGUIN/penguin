@@ -5,9 +5,9 @@ import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
 import com.devjk.penguin.db.entity.User
-import com.devjk.penguin.domain.auth.AuthUser
-import com.devjk.penguin.domain.auth.GoogleOpenId
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.AuthUser
+import com.devjk.penguin.domain.oidc.GoogleOpenId
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.error.ErrorCode
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat

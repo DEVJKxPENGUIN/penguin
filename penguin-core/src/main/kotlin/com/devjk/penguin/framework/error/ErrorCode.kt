@@ -15,5 +15,6 @@ enum class ErrorCode(
     INVALID_STATETOKEN(HttpStatus.BAD_REQUEST, -5, "invalid state token"),
     UNREGISTERED_USER(HttpStatus.UNAUTHORIZED, -6, "unregistered user"),
     INVALID_OIDC_PROVIDER(HttpStatus.BAD_REQUEST, -7, "invalid oidc provider"),
+    INVALID_SIGNUP_ACCESS(HttpStatus.BAD_REQUEST, -8, "invalid signup access"),
     ;
 }

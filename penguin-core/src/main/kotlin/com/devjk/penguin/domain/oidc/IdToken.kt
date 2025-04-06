@@ -1,7 +1,8 @@
-package com.devjk.penguin.domain.auth
+package com.devjk.penguin.domain.oidc
 
 import com.devjk.penguin.utils.JsonHelper
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import java.io.Serializable
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -14,7 +15,7 @@ data class IdToken(
     var email: String = "",
     var role: String = "",
     var origin: String = ""
-) {
+) : Serializable {
 
     companion object {
         fun from(token: String, role: Role = Role.GUEST): IdToken {

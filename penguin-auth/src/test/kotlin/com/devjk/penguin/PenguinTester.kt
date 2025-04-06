@@ -4,7 +4,7 @@ import com.devjk.penguin.config.TestConfig
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.external.GoogleApiHelper
 import com.devjk.penguin.utils.JwtHelper
 import com.fasterxml.jackson.databind.ObjectMapper

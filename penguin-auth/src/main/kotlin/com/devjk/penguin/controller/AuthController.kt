@@ -1,14 +1,18 @@
 package com.devjk.penguin.controller
 
 import com.devjk.penguin.db.entity.User
-import com.devjk.penguin.domain.auth.OidcProvider
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.OidcProvider
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.common.BaseResponse
+import com.devjk.penguin.framework.error.ErrorCode
+import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.AuthService
+import com.devjk.penguin.utils.UrlUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
@@ -20,8 +24,12 @@ class AuthController(
 
     companion object {
         const val AUTH_VALUE = "devjk_auth"
+        const val OIDC_PROVIDER = "oidc_provider"
         const val OAUTH_STATE = "oauth_state"
         const val AUTH_REDIRECT = "redirect"
+        const val SIGNUP_PROVIDER = "signup_provider"
+        const val SIGNUP_IDTOKEN = "signup_idtoken"
+        const val SIGNUP_STATE = "signup_state"
     }
 
     /**
@@ -46,14 +54,18 @@ class AuthController(
             .body(BaseResponse.success())
     }
 
-    // 각 로그인 화면에서 provider 를 선택하면 호출됨
     @GetMapping("/start")
     fun startProvider(provider: String = "google", rd: String?): ResponseEntity<*> {
-        // fixme -> provider 를 구분해서 location redirect
-        val oidcProvider = OidcProvider.valueOf(provider)
-        val state = authService.setStateToken()
+        val oidcProvider: OidcProvider
+        try {
+            oidcProvider = OidcProvider.valueOf(provider)
+        } catch (e: Exception) {
+            throw BaseException(ErrorCode.INVALID_OIDC_PROVIDER, "지원하지 않는 OpenId Provider 입니다.")
+        }
+
+        val state = authService.setStateToken(oidcProvider)
         authService.setRedirectSession(rd)
-        val oidcLoginUrl = authService.getOidcProviderLink(state)
+        val oidcLoginUrl = authService.getOidcProviderLink(oidcProvider, state)
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
@@ -65,9 +77,41 @@ class AuthController(
     fun callback(state: String, code: String): ResponseEntity<*> {
         log.info("/callback called -- state: $state, code: $code")
 
-        authService.verifyStateToken(state)
-        val oidcToken = authService.getOpenId(code)
-        val user = authService.getRegisteredUser(oidcToken.email)
+        val oidcProvider = authService.verifyStateToken(state)
+        val oidcToken = authService.getOpenId(oidcProvider, code)
+        val user = authService.getRegisteredUser(oidcProvider, oidcToken.email)
+            ?: run {
+                val signupState = authService.prepareSignup(oidcProvider, oidcToken)
+                return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .header(
+                        "Location",
+                        UrlUtils.userRegisterUrl(oidcToken.email, oidcProvider, signupState)
+                    )
+                    .body(BaseResponse.success())
+            }
+
+        return loginWithRedirect(user)
+    }
+
+    @PostMapping("/signup")
+    fun signup(state: String, nickname: String): ResponseEntity<*> {
+        val user = authService.signup(state, nickname)
+        return loginWithRedirect(user)
+    }
+
+    @GetMapping("/logout")
+    fun logout(rd: String?): ResponseEntity<*> {
+        authService.logout()
+        if (rd.isNullOrBlank()) {
+            return ResponseEntity.ok().body(BaseResponse.success())
+        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header("Location", rd)
+            .body(BaseResponse.success())
+    }
+
+    private fun loginWithRedirect(user: User): ResponseEntity<*> {
         val idToken = authService.login(user)
         val rd = authService.getRedirectSession()
 
@@ -82,16 +126,5 @@ class AuthController(
                     )
                 )
             )
-    }
-
-    @GetMapping("/logout")
-    fun logout(rd: String?): ResponseEntity<*> {
-        authService.logout()
-        if (rd.isNullOrBlank()) {
-            return ResponseEntity.ok().body(BaseResponse.success())
-        }
-        return ResponseEntity.status(HttpStatus.FOUND)
-            .header("Location", rd)
-            .body(BaseResponse.success())
     }
 }

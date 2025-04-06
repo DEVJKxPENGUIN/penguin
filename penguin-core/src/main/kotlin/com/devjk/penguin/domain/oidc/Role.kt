@@ -1,4 +1,4 @@
-package com.devjk.penguin.domain.auth
+package com.devjk.penguin.domain.oidc
 
 enum class Role(
     private val level: Int,

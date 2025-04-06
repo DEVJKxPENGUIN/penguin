@@ -1,7 +1,7 @@
 package com.devjk.penguin.framework.custom
 
-import com.devjk.penguin.domain.auth.AuthUser
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.AuthUser
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException

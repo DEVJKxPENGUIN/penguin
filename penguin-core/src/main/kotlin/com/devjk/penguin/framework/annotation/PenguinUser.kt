@@ -1,6 +1,6 @@
 package com.devjk.penguin.framework.annotation
 
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.Role
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
