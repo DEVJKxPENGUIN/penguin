@@ -5,7 +5,11 @@ class UrlUtils {
     companion object {
 
         fun loginUrl(): String {
-            return "${serverAuth()}/start"
+            return "${serverHome()}/user/login"
+        }
+
+        fun startOidcProviderUrl(provider: String, rd: String?): String {
+            return "${serverAuth()}/start?provider=$provider&rd=${rd ?: serverHome()}"
         }
 
         fun logoutUrl(): String {

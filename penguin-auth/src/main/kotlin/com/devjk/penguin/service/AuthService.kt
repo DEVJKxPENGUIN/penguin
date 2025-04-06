@@ -27,7 +27,7 @@ class AuthService(
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    fun getUserAuthorization(role: Role): User {
+    fun getUserAuthorization(role: Role = Role.NORMAL): User {
         session.getAttribute(AUTH_VALUE)?.let {
             val user = it as User
             if (!user.hasRole(role)) {
@@ -40,6 +40,15 @@ class AuthService(
             }
         }
         throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
+    }
+
+    fun isAuthenticated(): Boolean {
+        try {
+            getUserAuthorization()
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     fun setStateToken(): String {

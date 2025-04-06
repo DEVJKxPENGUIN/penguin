@@ -1,6 +1,7 @@
 package com.devjk.penguin.controller
 
 import com.devjk.penguin.db.entity.User
+import com.devjk.penguin.domain.auth.OidcProvider
 import com.devjk.penguin.domain.auth.Role
 import com.devjk.penguin.framework.common.BaseResponse
 import com.devjk.penguin.service.AuthService
@@ -45,8 +46,11 @@ class AuthController(
             .body(BaseResponse.success())
     }
 
+    // 각 로그인 화면에서 provider 를 선택하면 호출됨
     @GetMapping("/start")
-    fun start(rd: String?): ResponseEntity<*> {
+    fun startProvider(provider: String = "google", rd: String?): ResponseEntity<*> {
+        // fixme -> provider 를 구분해서 location redirect
+        val oidcProvider = OidcProvider.valueOf(provider)
         val state = authService.setStateToken()
         authService.setRedirectSession(rd)
         val oidcLoginUrl = authService.getOidcProviderLink(state)
