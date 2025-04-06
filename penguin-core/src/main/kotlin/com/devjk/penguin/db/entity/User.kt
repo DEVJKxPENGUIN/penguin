@@ -1,6 +1,7 @@
 package com.devjk.penguin.db.entity
 
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.OidcProvider
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.common.BaseEntity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
@@ -15,6 +16,10 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Long = 0,
+
+    @Column(name = "provider")
+    @Enumerated(EnumType.STRING)
+    val provider: OidcProvider,
 
     @Column(name = "nickname")
     val nickName: String = "",

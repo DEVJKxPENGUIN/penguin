@@ -1,5 +1,7 @@
 package com.devjk.penguin.utils
 
+import com.devjk.penguin.domain.oidc.OidcProvider
+
 class UrlUtils {
 
     companion object {
@@ -10,6 +12,14 @@ class UrlUtils {
 
         fun startOidcProviderUrl(provider: String, rd: String?): String {
             return "${serverAuth()}/start?provider=$provider&rd=${rd ?: serverHome()}"
+        }
+
+        fun userRegisterUrl(email: String, provider: OidcProvider, state: String): String {
+            return "${serverHome()}/user/register?email=$email&provider=$provider&state=$state"
+        }
+
+        fun signupUrl(): String {
+            return "${serverAuth()}/signup"
         }
 
         fun logoutUrl(): String {

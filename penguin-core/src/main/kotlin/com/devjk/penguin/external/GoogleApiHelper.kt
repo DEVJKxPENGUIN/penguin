@@ -1,6 +1,6 @@
 package com.devjk.penguin.external
 
-import com.devjk.penguin.domain.auth.GoogleOpenId
+import com.devjk.penguin.domain.oidc.GoogleOpenId
 import com.devjk.penguin.utils.UrlUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType

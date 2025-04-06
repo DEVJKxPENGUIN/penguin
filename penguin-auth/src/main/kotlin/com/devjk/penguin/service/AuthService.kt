@@ -3,11 +3,16 @@ package com.devjk.penguin.service
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
+import com.devjk.penguin.controller.AuthController.Companion.OIDC_PROVIDER
+import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_IDTOKEN
+import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_PROVIDER
+import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_STATE
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
-import com.devjk.penguin.domain.auth.IdToken
-import com.devjk.penguin.domain.auth.Role
-import com.devjk.penguin.external.GoogleApiHelper
+import com.devjk.penguin.domain.oidc.ConnectorFactory
+import com.devjk.penguin.domain.oidc.IdToken
+import com.devjk.penguin.domain.oidc.OidcProvider
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.utils.JwtHelper
@@ -23,7 +28,7 @@ class AuthService(
     private val session: HttpSession,
     private val jwtHelper: JwtHelper,
     private val userRepository: UserRepository,
-    private val googleApiHelper: GoogleApiHelper
+    private val connectorFactory: ConnectorFactory,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -42,18 +47,10 @@ class AuthService(
         throw BaseException(ErrorCode.UNAUTHORIZED, "접근권한이 없습니다. 로그인 해주세요.")
     }
 
-    fun isAuthenticated(): Boolean {
-        try {
-            getUserAuthorization()
-            return true
-        } catch (e: Exception) {
-            return false
-        }
-    }
-
-    fun setStateToken(): String {
+    fun setStateToken(provider: OidcProvider): String {
         val state = BigInteger(130, SecureRandom()).toString(32)
         session.setAttribute(OAUTH_STATE, state)
+        session.setAttribute(OIDC_PROVIDER, provider)
         return state
     }
 
@@ -67,11 +64,12 @@ class AuthService(
         return (session.getAttribute(AUTH_REDIRECT) ?: UrlUtils.serverHome()) as String
     }
 
-    fun getOidcProviderLink(state: String): String {
-        return googleApiHelper.getGoogleLoginUrl(state)
+    fun getOidcProviderLink(provider: OidcProvider, state: String): String {
+        val connector = connectorFactory.get(provider)
+        return connector.getProviderLink(state)
     }
 
-    fun verifyStateToken(state: String) {
+    fun verifyStateToken(state: String): OidcProvider {
         val sessionState =
             session.getAttribute(OAUTH_STATE) ?: throw BaseException(ErrorCode.INVALID_STATETOKEN)
         val storedState = sessionState as String
@@ -79,17 +77,55 @@ class AuthService(
         if (storedState != state) {
             throw BaseException(ErrorCode.INVALID_STATETOKEN)
         }
+
+        return session.getAttribute(OIDC_PROVIDER) as OidcProvider?
+            ?: throw BaseException(ErrorCode.INVALID_STATETOKEN)
     }
 
-    fun getOpenId(code: String): IdToken {
-        return googleApiHelper.verifyOAuthCode(code)?.let {
-            IdToken.from(it.idToken)
-        } ?: throw BaseException(ErrorCode.UNAUTHORIZED)
+    fun getOpenId(provider: OidcProvider, code: String): IdToken {
+        val connector = connectorFactory.get(provider)
+        return connector.getOpenId(code) ?: throw BaseException(ErrorCode.UNAUTHORIZED)
     }
 
-    fun getRegisteredUser(email: String): User {
-        return userRepository.findByEmail(email)
-            ?: throw BaseException(ErrorCode.UNREGISTERED_USER)
+    fun getRegisteredUser(oidcProvider: OidcProvider, email: String): User? {
+        return userRepository.findByProviderAndEmail(oidcProvider, email)
+    }
+
+    fun prepareSignup(oidcProvider: OidcProvider, idToken: IdToken): String {
+        val state = BigInteger(130, SecureRandom()).toString(32)
+        session.setAttribute(SIGNUP_PROVIDER, oidcProvider)
+        session.setAttribute(SIGNUP_IDTOKEN, idToken)
+        session.setAttribute(SIGNUP_STATE, state)
+        return state
+    }
+
+    fun signup(state: String, nickName: String): User {
+        val sessionState = session.getAttribute(SIGNUP_STATE) as String?
+            ?: throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
+
+        val oidcToken = session.getAttribute(SIGNUP_IDTOKEN) as IdToken?
+            ?: throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
+
+        val oidcProvider = session.getAttribute(SIGNUP_PROVIDER) as OidcProvider?
+            ?: throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
+
+        if (sessionState != state) {
+            throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
+        }
+
+        val user = userRepository.save(
+            User(
+                provider = oidcProvider,
+                nickName = nickName,
+                email = oidcToken.email,
+                role = Role.NORMAL
+            )
+        )
+
+        session.removeAttribute(SIGNUP_PROVIDER)
+        session.removeAttribute(SIGNUP_IDTOKEN)
+        session.removeAttribute(SIGNUP_STATE)
+        return user
     }
 
     fun login(user: User): String {

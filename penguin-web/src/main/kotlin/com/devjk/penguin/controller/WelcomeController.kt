@@ -1,7 +1,7 @@
 package com.devjk.penguin.controller
 
-import com.devjk.penguin.domain.auth.AuthUser
-import com.devjk.penguin.domain.auth.Role
+import com.devjk.penguin.domain.oidc.AuthUser
+import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.utils.UrlUtils
 import org.springframework.stereotype.Controller

@@ -1,4 +1,4 @@
-package com.devjk.penguin.domain.auth
+package com.devjk.penguin.domain.oidc
 
 data class AuthUser(
     val email: String,
