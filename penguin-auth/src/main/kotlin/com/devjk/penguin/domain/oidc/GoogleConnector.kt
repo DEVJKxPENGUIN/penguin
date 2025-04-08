@@ -1,7 +1,9 @@
 package com.devjk.penguin.domain.oidc
 
 import com.devjk.penguin.external.GoogleApiHelper
+import com.devjk.penguin.utils.JsonHelper
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class GoogleConnector(
@@ -12,9 +14,14 @@ class GoogleConnector(
         return googleApiHelper.getGoogleLoginUrl(state)
     }
 
-    override fun getOpenId(code: String): IdToken? {
+    override fun getProviderUserInfo(code: String): ProviderUserInfo? {
         return googleApiHelper.verifyOAuthCode(code)?.let {
-            IdToken.from(it.idToken)
+            val encodedPayload = it.idToken.split(".")[1]
+            val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
+            val payloadMap = JsonHelper.fromJson(payload, Map::class.java)
+            val sub = payloadMap["sub"] as String
+            val email = payloadMap["email"] as String
+            return ProviderUserInfo(sub, email)
         }
     }
 }

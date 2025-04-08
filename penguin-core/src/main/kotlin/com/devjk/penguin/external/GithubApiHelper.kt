@@ -11,61 +11,51 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Component
-class GoogleApiHelper(
+class GithubApiHelper(
     private val webClient: WebClient,
-    @Value("\${google-client-id}")
+    @Value("\${github-client-id}")
     private val clientId: String,
-    @Value("\${google-client-secret}")
-    private val clientSecret: String,
+    @Value("\${github-client-secret}")
+    private val clientSecret: String
 ) {
 
-    private val GOOGLE_ACCOUNT_URL = "https://accounts.google.com"
-    private val GOOGLE_OAUTH_URL = "https://oauth2.googleapis.com"
+    private val GITHUB_URL = "https://github.com"
 
-    fun getGoogleLoginUrl(state: String): String {
+    fun getGithubLoginUrl(state: String): String {
         val encodedRedirect = URLEncoder.encode(UrlUtils.redirectUrl(), StandardCharsets.UTF_8)
         val encodedState = URLEncoder.encode(state, StandardCharsets.UTF_8)
         val encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
 
-        return "$GOOGLE_ACCOUNT_URL/o/oauth2/v2/auth?" +
-                "response_type=code" +
-                "&client_id=$encodedClientId" +
-                "&scope=openid%20email" +
+        return "$GITHUB_URL/login/oauth/authorize?" +
+                "client_id=$encodedClientId" +
+                "&scope=user" +
                 "&redirect_uri=$encodedRedirect" +
                 "&state=$encodedState"
     }
 
-    fun verifyOAuthCode(code: String): GoogleOpenId? {
+    fun verifyOAuthCode(code: String): GithubAccessToken? {
         return webClient
             .post()
-            .uri("$GOOGLE_OAUTH_URL/token")
+            .uri("$GITHUB_URL/login/oauth/access_token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(
                 BodyInserters.fromFormData("code", code)
                     .with("client_id", clientId)
                     .with("client_secret", clientSecret)
                     .with("redirect_uri", UrlUtils.redirectUrl())
-                    .with("grant_type", "authorization_code")
             )
             .retrieve()
-            .bodyToMono(GoogleOpenId::class.java)
+            .bodyToMono(GithubAccessToken::class.java)
             .block()
     }
 
-
 }
 
-data class GoogleOpenId(
+data class GithubAccessToken(
     @JsonProperty("access_token")
     val accessToken: String,
-    @JsonProperty("expires_in")
-    val expiresIn: Long,
-    @JsonProperty("id_token")
-    val idToken: String,
-    @JsonProperty("refresh_token")
-    val refreshToken: String?,
-    @JsonProperty("scope")
-    val scope: String,
     @JsonProperty("token_type")
-    val tokenType: String
+    val tokenType: String,
+    @JsonProperty("scope")
+    val scope: String
 )

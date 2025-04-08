@@ -34,7 +34,6 @@ class LoginController {
     @GetMapping("/register")
     fun register(
         @PenguinUser(min = Role.GUEST) user: AuthUser,
-        email: String,
         provider: String,
         state: String,
         rd: String?,
@@ -48,7 +47,6 @@ class LoginController {
         model.addAttribute("message", "또히는 일해요!")
         model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
         model.addAttribute("provider", provider)
-        model.addAttribute("email", email)
         model.addAttribute("signupUrl", UrlUtils.signupUrl())
         model.addAttribute("state", state)
         return "register"

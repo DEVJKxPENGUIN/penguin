@@ -21,6 +21,9 @@ class User(
     @Enumerated(EnumType.STRING)
     val provider: OidcProvider,
 
+    @Column(name = "provider_id")
+    val providerId: String,
+
     @Column(name = "nickname")
     val nickName: String = "",
 

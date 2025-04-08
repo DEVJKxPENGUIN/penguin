@@ -14,8 +14,8 @@ class UrlUtils {
             return "${serverAuth()}/start?provider=$provider&rd=${rd ?: serverHome()}"
         }
 
-        fun userRegisterUrl(email: String, provider: OidcProvider, state: String): String {
-            return "${serverHome()}/user/register?email=$email&provider=$provider&state=$state"
+        fun userRegisterUrl(provider: OidcProvider, state: String): String {
+            return "${serverHome()}/user/register?provider=$provider&state=$state"
         }
 
         fun signupUrl(): String {

@@ -28,7 +28,7 @@ class AuthController(
         const val OAUTH_STATE = "oauth_state"
         const val AUTH_REDIRECT = "redirect"
         const val SIGNUP_PROVIDER = "signup_provider"
-        const val SIGNUP_IDTOKEN = "signup_idtoken"
+        const val SIGNUP_USERINFO = "signup_idtoken"
         const val SIGNUP_STATE = "signup_state"
     }
 
@@ -78,15 +78,15 @@ class AuthController(
         log.info("/callback called -- state: $state, code: $code")
 
         val oidcProvider = authService.verifyStateToken(state)
-        val oidcToken = authService.getOpenId(oidcProvider, code)
-        val user = authService.getRegisteredUser(oidcProvider, oidcToken.email)
+        val providerUserInfo = authService.getProviderUserInfo(oidcProvider, code)
+        val user = authService.getRegisteredUser(oidcProvider, providerUserInfo)
             ?: run {
-                val signupState = authService.prepareSignup(oidcProvider, oidcToken)
+                val signupState = authService.prepareSignup(oidcProvider, providerUserInfo)
                 return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .header(
                         "Location",
-                        UrlUtils.userRegisterUrl(oidcToken.email, oidcProvider, signupState)
+                        UrlUtils.userRegisterUrl(oidcProvider, signupState)
                     )
                     .body(BaseResponse.success())
             }
