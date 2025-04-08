@@ -6,5 +6,5 @@ import java.io.Serializable
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ProviderUserInfo(
     var id: String,
-    var email: String = "",
+    var email: String? = "",
 ) : Serializable

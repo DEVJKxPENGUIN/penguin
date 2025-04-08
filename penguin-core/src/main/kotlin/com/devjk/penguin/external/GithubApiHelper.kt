@@ -20,6 +20,7 @@ class GithubApiHelper(
 ) {
 
     private val GITHUB_URL = "https://github.com"
+    private val GITHUB_API_URL = "https://api.github.com"
 
     fun getGithubLoginUrl(state: String): String {
         val encodedRedirect = URLEncoder.encode(UrlUtils.redirectUrl(), StandardCharsets.UTF_8)
@@ -33,7 +34,7 @@ class GithubApiHelper(
                 "&state=$encodedState"
     }
 
-    fun verifyOAuthCode(code: String): GithubAccessToken? {
+    fun getAccessToken(code: String): GithubAccessToken? {
         return webClient
             .post()
             .uri("$GITHUB_URL/login/oauth/access_token")
@@ -49,6 +50,18 @@ class GithubApiHelper(
             .block()
     }
 
+    fun getUser(accessToken: String): GithubUser? {
+        return webClient
+            .get()
+            .uri("$GITHUB_API_URL/user")
+            .headers {
+                it.setBearerAuth(accessToken)
+            }
+            .retrieve()
+            .bodyToMono(GithubUser::class.java)
+            .block()
+    }
+
 }
 
 data class GithubAccessToken(
@@ -58,4 +71,13 @@ data class GithubAccessToken(
     val tokenType: String,
     @JsonProperty("scope")
     val scope: String
+)
+
+// 스키마 추가 가능
+// https://docs.github.com/ko/rest/users/users?apiVersion=2022-11-28#get-the-authenticated-user
+data class GithubUser(
+    @JsonProperty("id")
+    val id: String,
+    @JsonProperty("email")
+    val email: String?
 )

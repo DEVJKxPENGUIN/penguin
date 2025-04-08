@@ -26,14 +26,15 @@ class JwtHelper(
         const val KTY = "RSA"
     }
 
-    fun create(email: String, role: String, nickname: String): String {
+    fun create(id: Long, email: String?, role: String, nickname: String): String {
         val privateKey = loadRsaPrivateKey()
         val now = Instant.now()
         return Jwts.builder()
-            .subject(email)
+            .subject(id.toString())
             .header()
             .add("kid", KID)
             .and()
+            .claim("email", email)
             .claim("nickname", nickname)
             .claim("aud", AUD)
             .claim("iss", UrlUtils.serverAuth())
