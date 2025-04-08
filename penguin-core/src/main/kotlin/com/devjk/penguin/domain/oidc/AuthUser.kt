@@ -1,13 +1,14 @@
 package com.devjk.penguin.domain.oidc
 
 data class AuthUser(
+    val id: Long,
     val email: String,
     val role: Role,
     val nickname: String
 ) {
     companion object {
         fun ofGuest(): AuthUser {
-            return AuthUser("anonymous", Role.GUEST, "anonymous")
+            return AuthUser(0L, "anonymous", Role.GUEST, "anonymous")
         }
     }
 
