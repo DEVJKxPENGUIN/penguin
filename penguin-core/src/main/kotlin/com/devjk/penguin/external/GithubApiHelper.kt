@@ -3,6 +3,7 @@ package com.devjk.penguin.external
 import com.devjk.penguin.utils.UrlUtils
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -37,11 +38,16 @@ class GithubApiHelper(
         return webClient
             .post()
             .uri("$GITHUB_URL/login/oauth/access_token")
+            .contentType(MediaType.APPLICATION_JSON)
             .body(
-                BodyInserters.fromFormData("code", code)
-                    .with("client_id", clientId)
-                    .with("client_secret", clientSecret)
-                    .with("redirect_uri", UrlUtils.redirectUrl())
+                BodyInserters.fromValue(
+                    mapOf(
+                        "client_id" to clientId,
+                        "client_secret" to clientSecret,
+                        "code" to code,
+                        "redirect_uri" to UrlUtils.redirectUrl()
+                    )
+                )
             )
             .retrieve()
             .bodyToMono(GithubAccessToken::class.java)
