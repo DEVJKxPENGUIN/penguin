@@ -38,16 +38,13 @@ class GithubApiHelper(
         return webClient
             .post()
             .uri("$GITHUB_URL/login/oauth/access_token")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .accept(MediaType.APPLICATION_JSON)
             .body(
-                BodyInserters.fromValue(
-                    mapOf(
-                        "client_id" to clientId,
-                        "client_secret" to clientSecret,
-                        "code" to code,
-                        "redirect_uri" to UrlUtils.redirectUrl()
-                    )
-                )
+                BodyInserters.fromFormData("code", code)
+                    .with("client_id", clientId)
+                    .with("client_secret", clientSecret)
+                    .with("redirect_uri", UrlUtils.redirectUrl())
             )
             .retrieve()
             .bodyToMono(GithubAccessToken::class.java)
