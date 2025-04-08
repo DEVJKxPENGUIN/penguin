@@ -1,15 +1,18 @@
 package com.devjk.penguin.domain.oidc
 
+import com.devjk.penguin.external.GithubApiHelper
 import org.springframework.stereotype.Component
 
 @Component
-class GithubConnector : Connector {
+class GithubConnector(
+    private val githubApiHelper: GithubApiHelper
+) : Connector {
 
     override fun getProviderLink(state: String): String {
-        TODO("Not yet implemented")
+        return githubApiHelper.getGithubLoginUrl(state)
     }
 
-    override fun getOpenId(code: String): IdToken {
+    override fun getProviderUserInfo(code: String): ProviderUserInfo? {
         TODO("Not yet implemented")
     }
 }

@@ -4,14 +4,14 @@ import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
 import com.devjk.penguin.controller.AuthController.Companion.OIDC_PROVIDER
-import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_IDTOKEN
 import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_PROVIDER
 import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_STATE
+import com.devjk.penguin.controller.AuthController.Companion.SIGNUP_USERINFO
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
 import com.devjk.penguin.domain.oidc.ConnectorFactory
-import com.devjk.penguin.domain.oidc.IdToken
 import com.devjk.penguin.domain.oidc.OidcProvider
+import com.devjk.penguin.domain.oidc.ProviderUserInfo
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
@@ -82,19 +82,19 @@ class AuthService(
             ?: throw BaseException(ErrorCode.INVALID_STATETOKEN)
     }
 
-    fun getOpenId(provider: OidcProvider, code: String): IdToken {
+    fun getProviderUserInfo(provider: OidcProvider, code: String): ProviderUserInfo {
         val connector = connectorFactory.get(provider)
-        return connector.getOpenId(code) ?: throw BaseException(ErrorCode.UNAUTHORIZED)
+        return connector.getProviderUserInfo(code) ?: throw BaseException(ErrorCode.UNAUTHORIZED)
     }
 
-    fun getRegisteredUser(oidcProvider: OidcProvider, email: String): User? {
-        return userRepository.findByProviderAndEmail(oidcProvider, email)
+    fun getRegisteredUser(oidcProvider: OidcProvider, providerUserInfo: ProviderUserInfo): User? {
+        return userRepository.findByProviderAndProviderId(oidcProvider, providerUserInfo.id)
     }
 
-    fun prepareSignup(oidcProvider: OidcProvider, idToken: IdToken): String {
+    fun prepareSignup(oidcProvider: OidcProvider, providerUserInfo: ProviderUserInfo): String {
         val state = BigInteger(130, SecureRandom()).toString(32)
         session.setAttribute(SIGNUP_PROVIDER, oidcProvider)
-        session.setAttribute(SIGNUP_IDTOKEN, idToken)
+        session.setAttribute(SIGNUP_USERINFO, providerUserInfo)
         session.setAttribute(SIGNUP_STATE, state)
         return state
     }
@@ -103,7 +103,7 @@ class AuthService(
         val sessionState = session.getAttribute(SIGNUP_STATE) as String?
             ?: throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
 
-        val oidcToken = session.getAttribute(SIGNUP_IDTOKEN) as IdToken?
+        val providerUserInfo = session.getAttribute(SIGNUP_USERINFO) as ProviderUserInfo?
             ?: throw BaseException(ErrorCode.INVALID_SIGNUP_ACCESS, "잘못된 접근입니다.")
 
         val oidcProvider = session.getAttribute(SIGNUP_PROVIDER) as OidcProvider?
@@ -116,14 +116,15 @@ class AuthService(
         val user = userRepository.save(
             User(
                 provider = oidcProvider,
+                providerId = providerUserInfo.id,
                 nickName = nickName,
-                email = oidcToken.email,
+                email = providerUserInfo.email,
                 role = Role.NORMAL
             )
         )
 
         session.removeAttribute(SIGNUP_PROVIDER)
-        session.removeAttribute(SIGNUP_IDTOKEN)
+        session.removeAttribute(SIGNUP_USERINFO)
         session.removeAttribute(SIGNUP_STATE)
         return user
     }
