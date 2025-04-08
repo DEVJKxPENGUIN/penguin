@@ -28,7 +28,7 @@ class User(
     val nickName: String = "",
 
     @Column(name = "email")
-    val email: String = "",
+    val email: String? = "",
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)

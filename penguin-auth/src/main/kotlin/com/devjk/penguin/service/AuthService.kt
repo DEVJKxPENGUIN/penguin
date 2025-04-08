@@ -132,7 +132,7 @@ class AuthService(
     fun login(user: User): String {
         user.renewSession()
 
-        val jwt = jwtHelper.create(user.email, user.role.name, user.nickName)
+        val jwt = jwtHelper.create(user.id, user.email, user.role.name, user.nickName)
         user.idToken = jwt
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)

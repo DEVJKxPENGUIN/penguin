@@ -13,6 +13,11 @@ class GithubConnector(
     }
 
     override fun getProviderUserInfo(code: String): ProviderUserInfo? {
-        TODO("Not yet implemented")
+        return githubApiHelper.getAccessToken(code)?.let {
+            return githubApiHelper.getUser(it.accessToken)?.let { user ->
+                return ProviderUserInfo(user.id, user.email)
+            }
+        }
+
     }
 }
