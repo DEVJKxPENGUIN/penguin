@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/test")
-class TestController(
-    private val mapper: ObjectMapper
-) {
+class TestController {
 
     @GetMapping("/auth/advice/guest")
     fun authAdviceAll(
