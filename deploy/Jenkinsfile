@@ -51,6 +51,33 @@ spec:
     }
 
     stages {
+
+        stage('Unit Test') {
+            steps {
+                script {
+                    def buildGradleFile = "./build.gradle.kts"
+                    def pluginName = "id(\"com.adarshr.test-logger\") version \"4.0.0\""
+                    def buildGradle = readFile(buildGradleFile)
+                    def insertIndex = buildGradle.indexOf("plugins {") + 10
+                    buildGradle = buildGradle.substring(0, insertIndex) + "\n    " + pluginName + "\n" + buildGradle.substring(insertIndex)
+                    writeFile(file: buildGradleFile, text: buildGradle)
+                }
+                container('gradle') {
+                    slackSend(channel: '#penguin-cicd', message: "[${params.role}] Build integration start #${BUILD_NUMBER}")
+                    def testResult = sh(
+                            script: "gradle ${params.role}:test",
+                            returnStatus: true
+                    )
+
+                    if (testResult != 0) {
+                        slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}")
+                    } else {
+                        slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+
         stage('Build Jar') {
             steps {
                 container('gradle') {
@@ -108,6 +135,15 @@ spec:
                         """
                     }
                 }
+            }
+        }
+
+        post {
+            success {
+                slackSend(channel: '#penguin-cicd', message: "${params.role} :tada:  Build integration success! #${BUILD_NUMBER}")
+            }
+            failure {
+                slackSend(channel: '#penguin-cicd', message: "${params.role} :boom:  Build integration failed #${BUILD_NUMBER}")
             }
         }
     }
