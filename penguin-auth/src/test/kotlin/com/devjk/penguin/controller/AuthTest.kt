@@ -4,11 +4,14 @@ import com.devjk.penguin.PenguinTester
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
+import com.devjk.penguin.controller.AuthController.Companion.OIDC_PROVIDER
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.domain.oidc.AuthUser
-import com.devjk.penguin.domain.oidc.GoogleOpenId
+import com.devjk.penguin.domain.oidc.OidcProvider
 import com.devjk.penguin.domain.oidc.Role
+import com.devjk.penguin.external.GoogleOpenId
 import com.devjk.penguin.framework.error.ErrorCode
+import com.devjk.penguin.utils.UrlUtils
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -300,6 +303,7 @@ class AuthTest : PenguinTester() {
         val now = LocalDateTime.now()
 
         session.setAttribute(OAUTH_STATE, state)
+        session.setAttribute(OIDC_PROVIDER, OidcProvider.google)
         doReturn(
             GoogleOpenId(
                 "test_access_token",
@@ -329,7 +333,7 @@ class AuthTest : PenguinTester() {
         assertThat(jwt).isNotBlank
         val claims = jwtHelper.getClaimsWithVerify(jwt!!)
         assertThat(claims).isNotNull
-        assertThat(claims!!.subject).isEqualTo(testUser.email)
+        assertThat(claims!!.subject).isEqualTo(testUser.id.toString())
         assertThat(claims["role"]).isEqualTo(testUser.role.toString())
         assertThat(claims["nickname"]).isEqualTo(testUser.nickName)
 
@@ -343,7 +347,7 @@ class AuthTest : PenguinTester() {
         assertThat((baseResponse["data"] as Map<*, *>)["email"]).isEqualTo(testUser.email)
 
         // user 의 idtoken 이 갱신되고 세션 및 db 의 마지막 로그인 시간이 갱신된다.
-        val user = userRepository.findByEmail(testUser.email)!!
+        val user = userRepository.findById(testUser.id).get()
         assertThat(user.idToken).isEqualTo(jwt)
         assertThat(user.lastLoginAt).isAfter(now)
         assertThat((session.getAttribute(AUTH_VALUE) as User).lastLoginAt).isAfter(now)
@@ -360,6 +364,7 @@ class AuthTest : PenguinTester() {
         val code = "test_code"
 
         session.setAttribute(OAUTH_STATE, state)
+        session.setAttribute(OIDC_PROVIDER, OidcProvider.google)
 
         val result = mockMvc.perform(
             MockMvcRequestBuilders
@@ -378,18 +383,21 @@ class AuthTest : PenguinTester() {
     @Test
     @DisplayName(
         """
-            /callback 시 oidc 인증유저가 가입되지 않은 유저면 <401> ErrorCode.UNREGISTERED_USER 오류를 받는다.
+            /callback 시 oidc 인증유저가 가입되지 않은 유저면 <401> 302 로그인 화면 응답을 받는다.
         """
     )
     fun callback3() {
         val state = "test_state"
         val code = "test_code"
 
+        val expectedLocation = "${UrlUtils.serverHome()}/user/register"
+
         // unregistered@penguintribe.net
         val testIdToken =
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDA4MjgzNDcwMzc2MDQ2NjA3MDAiLCJlbWFpbCI6InVucmVnaXN0ZXJlZEBwZW5ndWludHJpYmUubmV0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJobDEzQ2pqYjdLdU1hNzRaX3FXaG5RIiwiaWF0IjoxNzQzMTczNzQ3LCJleHAiOjE3NDMxNzczNDd9.tQZj5g8OydzHVYek9qW2kJctaMfhotD5OtfvGlZzFfo"
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDA4MjgzNDcwMzc2MDQ2NjA3MDEiLCJlbWFpbCI6InVucmVnaXN0ZXJlZEBwZW5ndWludHJpYmUubmV0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJobDEzQ2pqYjdLdU1hNzRaX3FXaG5RIiwiaWF0IjoxNzQzMTczNzQ3LCJleHAiOjE3NDMxNzczNDd9.ZjBsAOOckdqk5hettQoqj2_2etqYlp97iP4yNgs1Jmo"
 
         session.setAttribute(OAUTH_STATE, state)
+        session.setAttribute(OIDC_PROVIDER, OidcProvider.google)
 
         doReturn(
             GoogleOpenId(
@@ -408,12 +416,13 @@ class AuthTest : PenguinTester() {
                 .param("state", state)
                 .param("code", code)
         )
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+            .andExpect(MockMvcResultMatchers.status().isFound)
             .andReturn()
             .response
 
-        val baseResponse = mapper.readValue<Map<String, Any>>(result.contentAsString)
-        assertThat(baseResponse["code"]).isEqualTo(ErrorCode.UNREGISTERED_USER.value.toString())
+        assertThat(result.getHeader("Location")).isNotBlank
+        val location = result.getHeader("Location")
+        assertThat(location).startsWith(expectedLocation)
     }
 
     @Test
@@ -434,6 +443,7 @@ class AuthTest : PenguinTester() {
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0NDc4OTIzMTAyMjQtZ3FmaWZidDRkbDdjZm8yNDZubzRocnFuZmxqOWhhcTYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDA4MjgzNDcwMzc2MDQ2NjA3MDAiLCJlbWFpbCI6ImRldmprX2xvY2FsdGVzdEBwZW5ndWludHJpYmUubmV0IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJobDEzQ2pqYjdLdU1hNzRaX3FXaG5RIiwiaWF0IjoxNzQzMTczNzQ3LCJleHAiOjE3NDMxNzczNDd9.cCgClHlKiFhL2N31XVgmtE6yhjXv-5N-1BJGEKeJaE8"
 
         session.setAttribute(OAUTH_STATE, state)
+        session.setAttribute(OIDC_PROVIDER, OidcProvider.google)
         doReturn(
             GoogleOpenId(
                 "test_access_token",

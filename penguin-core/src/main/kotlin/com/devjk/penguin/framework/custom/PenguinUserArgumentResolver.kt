@@ -42,10 +42,11 @@ class PenguinUserArgumentResolver(
         if (!idToken.isNullOrBlank()) {
             val claims = jwtHelper.getClaimsWithVerify(idToken)
             claims?.let {
-                val email = it.subject
+                val id = it.subject.toLong()
+                val email = it["email"] as String
                 val role = it["role"] as String
                 val nickname = it["nickname"] as String
-                user = AuthUser(email, Role.valueOf(role), nickname)
+                user = AuthUser(id, email, Role.valueOf(role), nickname)
             }
         }
 

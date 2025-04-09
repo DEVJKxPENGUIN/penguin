@@ -4,6 +4,7 @@ import com.devjk.penguin.config.TestConfig
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.db.entity.User
 import com.devjk.penguin.db.repository.UserRepository
+import com.devjk.penguin.domain.oidc.OidcProvider
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.external.GoogleApiHelper
 import com.devjk.penguin.utils.JwtHelper
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.mock.web.MockHttpSession
 import org.springframework.test.web.servlet.MockMvc
+import java.util.*
 
 @SpringBootTest
 @Import(TestConfig::class)
@@ -50,9 +52,14 @@ class PenguinTester {
     @BeforeEach
     fun setup() {
         testUser =
-            createTestUser("devjk_localtest", "devjk_localtest@penguintribe.net", Role.NORMAL)
+            createTestUser(
+                "devjk_localtest",
+                "devjk_localtest@penguintribe.net",
+                "100828347037604660700",
+                Role.NORMAL
+            )
         testSuperUser =
-            createTestUser("devjk_supertest", "devjk_supertest@penguintribe.net", Role.SUPER)
+            createTestUser("devjk_supertest", "devjk_supertest@penguintribe.net", "", Role.SUPER)
         userRepository.save(testUser)
         userRepository.save(testSuperUser)
     }
@@ -64,9 +71,19 @@ class PenguinTester {
         session.clearAttributes()
     }
 
-    fun createTestUser(nickName: String, email: String, role: Role): User {
-        val jwt = jwtHelper.create(email, role.name, nickName)
-        return User(nickName = nickName, email = email, role = role, idToken = jwt)
+    fun createTestUser(nickName: String, email: String, providerId: String, role: Role): User {
+        val user = userRepository.save(
+            User(
+                nickName = nickName,
+                provider = OidcProvider.google,
+                providerId = providerId,
+                email = email,
+                role = role,
+            )
+        )
+        val jwt = jwtHelper.create(user.id, email, role.name, nickName)
+        user.idToken = jwt
+        return user
     }
 
     fun testLogin(user: User) {
