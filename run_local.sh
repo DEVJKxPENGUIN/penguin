@@ -64,7 +64,13 @@ while (("$#")); do
   if [ "-web" = $1 ]; then
     RUN_MODULE=penguin-web
   fi
+  if [ "-penguin-web" = $1 ]; then
+    RUN_MODULE=penguin-web
+  fi
   if [ "-auth" = $1 ]; then
+    RUN_MODULE=penguin-auth
+  fi
+  if [ "-penguin-auth" = $1 ]; then
     RUN_MODULE=penguin-auth
   fi
   if [ "-local" = $1 ]; then
