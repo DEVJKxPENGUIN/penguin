@@ -67,7 +67,7 @@ spec:
                         slackSend(channel: '#penguin-cicd', message: "[${params.role}] Build integration start #${BUILD_NUMBER}")
                         def testResult = sh(
 //                                script: "gradle ${params.role}:test",
-                                script: "./run-test.sh -${params.role} -test",
+                                script: "./run_local.sh -${params.role} -test",
                                 returnStatus: true
                         )
 
