@@ -135,10 +135,12 @@ spec:
     }
 
     post {
-        junit "./${params.role}/build/test-results/test/*.xml"
         always {
-            def reportUrl = "${env.BUILD_URL}testReport"
-            slackSend(channel: '#penguin-cicd', message: "[${params.role}] 테스트 결과 보기 👉 ${reportUrl}")
+            junit "./${params.role}/build/test-results/test/*.xml"
+            script {
+                def reportUrl = "${env.BUILD_URL}testReport"
+                slackSend(channel: '#penguin-cicd', message: "[${params.role}] 테스트 결과 보기 👉 ${reportUrl}")
+            }
         }
         success {
             slackSend(channel: '#penguin-cicd', message: "${params.role} :tada:  Build integration success! #${BUILD_NUMBER}")
