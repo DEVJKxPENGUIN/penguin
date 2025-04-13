@@ -79,7 +79,12 @@ spec:
                                 slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + testOutput + "```")
                             }
 
-                            sh "mkdir -p test-esults && cp -r ./${params.role}/build/test-results/test/ test-results/"
+                            sh """
+                                echo 'Copying test results..'   
+                                mkdir -p test-esults && cp -r ./${params.role}/build/test-results/test/ test-results/
+                                chmod -R a+r test-results/
+                                chown -R 1000:1000 test-results/ || true
+                            """
                             stash includes: 'test-results/**', name: "${params.role}-test-results"
                         }
                     }
