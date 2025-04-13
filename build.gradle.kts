@@ -42,6 +42,7 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-data-redis")
         implementation("org.springframework.session:spring-session-data-redis")
         implementation("org.springframework.boot:spring-boot-starter-cache")
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("io.lettuce:lettuce-core")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
