@@ -58,8 +58,8 @@ spec:
                     script {
                         slackSend(channel: '#penguin-cicd', message: "[${params.role}] Build integration start #${BUILD_NUMBER}")
 
-                        withCredentials([string(credentialId: 'penguin-unit-test', variable: 'penguin-unit-test')]) {
-                            writeFile(file: '.env.secret', text: penguin - unit - test)
+                        withCredentials([string(credentialsId: 'penguin-unit-test', variable: 'PENGUIN_UNIT_TEST')]) {
+                            writeFile(file: '.env.secret', text: PENGUIN_UNIT_TEST)
 
                             def testOutput = sh(
                                     script: """
@@ -146,7 +146,7 @@ spec:
             slackSend(channel: '#penguin-cicd', message: "${params.role} :white_check_mark: Build integration success! #${BUILD_NUMBER}")
         }
         failure {
-            slackSend(channel: '#penguin-cicd', message: "${params.role} :boom: Build integration failed #${BUILD_NUMBER}")
+            slackSend(channel: '#penguin-cicd', message: "${params.role} :x: Build integration failed #${BUILD_NUMBER}")
         }
     }
 }
