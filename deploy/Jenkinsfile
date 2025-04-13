@@ -67,7 +67,6 @@ spec:
                             def testOutput = sh(
                                     script: """
                                         set -a
-                                        ls -la
                                         . ./.env.secret
                                         set +a
                                         ./run_local.sh -${params.role} -test
@@ -77,10 +76,15 @@ spec:
 
                             echo testOutput
 
+                            def summary = testOutput.readLines()
+                                    .dropWhile { !it.contains('📊 Test Summary:') }
+                                    .takeWhile { !it.contains("BUILD") }
+                                    .join("\n")
+
                             if (testOutput.contains("BUILD FAILED")) {
-                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}\n```" + testOutput + "```")
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}\n```" + summary + "```")
                             } else {
-                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + testOutput + "```")
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + summary + "```")
                             }
                         }
                     }
@@ -140,6 +144,8 @@ spec:
 
     post {
         always {
+            sh "ls -la"
+            sh "ls -la ./${params.role}/build/test-results/test/"
             junit "./${params.role}/build/test-results/test/*.xml"
             script {
                 def reportUrl = "${env.BUILD_URL}testReport"
