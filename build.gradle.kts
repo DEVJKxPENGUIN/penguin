@@ -67,13 +67,18 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
-        testLogging {
-            // test jvm의 standard out and standard error을 console에 출력한다.
-            events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-            showCauses = true
-            showExceptions = true
-            showStackTraces = true
-            exceptionFormat = TestExceptionFormat.FULL
+
+        val summaryOnly = project.findProperty("summary") as? String == "true"
+
+        if (!summaryOnly) {
+            testLogging {
+                // test jvm의 standard out and standard error을 console에 출력한다.
+                events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+                showCauses = true
+                showExceptions = true
+                showStackTraces = true
+                exceptionFormat = TestExceptionFormat.FULL
+            }
         }
 
         reports.html.required.set(true)

@@ -61,31 +61,26 @@ spec:
                         withCredentials([string(credentialsId: 'penguin-unit-test', variable: 'PENGUIN_UNIT_TEST')]) {
                             writeFile(file: '.env.secret', text: PENGUIN_UNIT_TEST)
 
-                            sh 'ls -la'
-                            sh 'cat .env.secret'
-
                             def testOutput = sh(
                                     script: """
                                         set -a
                                         . ./.env.secret
                                         set +a
-                                        ./run_local.sh -${params.role} -test
+                                        ./run_local.sh -${params.role} -test -summary
                                     """,
                                     returnStdout: true
                             )
 
                             echo testOutput
 
-                            def summary = testOutput.readLines()
-                                    .dropWhile { !it.contains('📊 Test Summary:') }
-                                    .takeWhile { !it.contains("BUILD") }
-                                    .join("\n")
-
                             if (testOutput.contains("BUILD FAILED")) {
-                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}\n```" + summary + "```")
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}\n```" + testOutput + "```")
                             } else {
-                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + summary + "```")
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + testOutput + "```")
                             }
+
+                            sh "mkdir -p test-esults && cp -r ./${params.role}/build/test-results/test/ test-results/"
+                            stash includes: 'test-results/**', name: "${params.role}-test-results"
                         }
                     }
                 }
@@ -144,9 +139,8 @@ spec:
 
     post {
         always {
-            sh "ls -la"
-            sh "ls -la ./${params.role}/build/test-results/test/"
-            junit "./${params.role}/build/test-results/test/*.xml"
+            unstash "${params.role}-test-results"
+            junit "${params.role}-test-results/*.xml"
             script {
                 def reportUrl = "${env.BUILD_URL}testReport"
                 slackSend(channel: '#penguin-cicd', message: "[${params.role}] 테스트 결과 보기 👉 ${reportUrl}")

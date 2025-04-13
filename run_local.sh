@@ -7,6 +7,7 @@ RUN_DIRECTORY=""
 MODE="local"
 RUN_TYPE="spring" ## spring or npm
 GRADLE_TASK="bootRun"
+EXTRA=""
 DB_HOST="localhost:43306"
 DB_USERNAME="root"
 DB_PASSWORD="develop"
@@ -82,6 +83,9 @@ while (("$#")); do
   if [ "-test" = $1 ]; then
     GRADLE_TASK=test
   fi
+  if [ "-summary" = $1 ]; then
+    EXTRA=" -Psummary=true"
+  fi
   shift
 done
 
@@ -90,10 +94,10 @@ if [ ${RUN_TYPE} = "spring" ]; then
   # process run options
   ARGS="--stacktrace --debug --quiet"
   if [ "${GRADLE_TASK}" = "test" ]; then
-    ARGS="--rerun"
+    ARGS="--rerun ${EXTRA}"
   fi
   if [ ${DEBUG} = true ]; then
-    ARGS="${ARGS} --debug-jvm"
+    ARGS="${ARGS} --debug-jvm ${EXTRA}"
   fi
   if [ -z ${RUN_MODULE} ]; then
     echo 'you should choose module option (-web, -auth)'
