@@ -90,7 +90,7 @@ if [ ${RUN_TYPE} = "spring" ]; then
   # process run options
   ARGS="--stacktrace --debug --quiet"
   if [ "${GRADLE_TASK}" = "test" ]; then
-    ARGS=""
+    ARGS="--rerun"
   fi
   if [ ${DEBUG} = true ]; then
     ARGS="${ARGS} --debug-jvm"
