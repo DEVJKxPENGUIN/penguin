@@ -67,8 +67,8 @@ spec:
                             def testOutput = sh(
                                     script: """
                                         set -a
-                                        pwd
-                                        . .env.secret
+                                        ls -la
+                                        . ./.env.secret
                                         set +a
                                         ./run_local.sh -${params.role} -test
                                     """,
