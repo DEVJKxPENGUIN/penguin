@@ -15,10 +15,17 @@ spec:
     spec:
       containers:
         - name: penguin-auth
-          image: 10.105.58.187:5000/penguin-auth:137
+          image: 10.105.58.187:5000/penguin-auth:138
           imagePullPolicy: Always
           envFrom:
           - secretRef:
               name: penguin-secret
           ports:
           - containerPort: 8082
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
