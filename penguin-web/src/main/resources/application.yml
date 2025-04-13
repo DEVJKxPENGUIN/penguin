@@ -58,4 +58,4 @@ spring:
       on-profile: "prod"
 logging:
   level:
-    root: debug
+    root: info
