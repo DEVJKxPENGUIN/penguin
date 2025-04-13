@@ -1,12 +1,12 @@
 package com.devjk.penguin.helper
 
-import com.devjk.penguin.PenguinTester
+import com.devjk.penguin.PenguinAuthTester
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 
-class JwtTest : PenguinTester() {
+class JwtTest : PenguinAuthTester() {
 
     @Test
     @DisplayName(
