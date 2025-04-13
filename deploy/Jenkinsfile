@@ -54,30 +54,32 @@ spec:
 
         stage('Unit Test') {
             steps {
-                script {
-                    def buildGradleFile = "./build.gradle.kts"
-                    def pluginName = "id(\"com.adarshr.test-logger\") version \"4.0.0\""
-                    def buildGradle = readFile(buildGradleFile)
-                    def insertIndex = buildGradle.indexOf("plugins {") + 10
-                    buildGradle = buildGradle.substring(0, insertIndex) + "\n    " + pluginName + "\n" + buildGradle.substring(insertIndex)
-                    writeFile(file: buildGradleFile, text: buildGradle)
-                }
                 container('gradle') {
                     script {
                         slackSend(channel: '#penguin-cicd', message: "[${params.role}] Build integration start #${BUILD_NUMBER}")
-                        def testResult = sh(
-//                                script: "gradle ${params.role}:test",
-                                script: "./run_local.sh -${params.role} -test",
-                                returnStatus: true
-                        )
 
-                        if (testResult != 0) {
-                            slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}")
-                        } else {
-                            slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}")
+                        withCredentials([string(credentialId: 'penguin-unit-test', variable: 'penguin-unit-test')]) {
+                            writeFile(file: '.env.secret', text: penguin - unit - test)
+
+                            def testOutput = sh(
+                                    script: """
+                                        set -a
+                                        source .env.secret
+                                        set +a
+                                        ./run_local.sh -${params.role} -test
+                                    """,
+                                    returnStdout: true
+                            )
+
+                            echo testOutput
+
+                            if (testOutput.contains("BUILD FAILED")) {
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :x: Unit test failed #${BUILD_NUMBER}\n```" + testOutput + "```")
+                            } else {
+                                slackSend(channel: '#penguin-cicd', message: "[${params.role}] :white_check_mark: Unit test success #${BUILD_NUMBER}\n```" + testOutput + "```")
+                            }
                         }
                     }
-
                 }
             }
         }
@@ -104,17 +106,6 @@ spec:
                         docker build -t ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER} ./${params.role}
                         docker push ${DOCKER_REGISTRY}/${params.role}:${BUILD_NUMBER}
                     """
-
-//                    withCredentials([usernamePassword(credentialsId: 'dockerhub',
-//                            usernameVariable: 'DOCKER_USERNAME',
-//                            passwordVariable: 'DOCKER_PASSWORD')]) {
-//                        sh """
-//                            docker --version
-//                            docker info
-//                            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-//                            docker build -t devjk4254/penguin:latest -t devjk4254/penguin:${BUILD_NUMBER} --push ./${params.role}
-//                        """
-//                    }
                 }
             }
         }
@@ -144,6 +135,11 @@ spec:
     }
 
     post {
+        junit "./${params.role}/build/test-results/test/*.xml"
+        always {
+            def reportUrl = "${env.BUILD_URL}testReport"
+            slackSend(channel: '#penguin-cicd', message: "[${params.role}] 테스트 결과 보기 👉 ${reportUrl}")
+        }
         success {
             slackSend(channel: '#penguin-cicd', message: "${params.role} :tada:  Build integration success! #${BUILD_NUMBER}")
         }
