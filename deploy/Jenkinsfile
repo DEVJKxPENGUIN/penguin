@@ -63,9 +63,8 @@ spec:
 
                             def testOutput = sh(
                                     script: """
-                                        #!/bin/bash
                                         set -a
-                                        source .env.secret
+                                        . .env.secret
                                         set +a
                                         ./run_local.sh -${params.role} -test
                                     """,
