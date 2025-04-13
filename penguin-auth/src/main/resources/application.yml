@@ -26,9 +26,6 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-#    url: jdbc:mysql://${DB_HOST}/penguin?useSSL=false&serverTimezone=UTC&connectTimeout=5000&autoReconnect=true&allowPublicKeyRetrieval=true
-#    username: ${DB_USERNAME}
-#    password: ${DB_PASSWORD}
 
 server:
   port: 8082
@@ -39,6 +36,12 @@ server:
     acceptCount: 100
     maxKeepAliveRequests: 100
     connectionTimeout: 60000
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
 
 db-host: ${DB_HOST}
 db-username: ${DB_USERNAME}
@@ -90,4 +93,4 @@ server:
 
 logging:
   level:
-    root: debug
+    root: info

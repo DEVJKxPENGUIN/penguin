@@ -22,3 +22,10 @@ spec:
               name: penguin-secret
           ports:
           - containerPort: {{PORT}}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{PORT}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+

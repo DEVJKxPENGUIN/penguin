@@ -1,6 +1,6 @@
 package com.devjk.penguin.controller
 
-import com.devjk.penguin.PenguinTester
+import com.devjk.penguin.PenguinAuthTester
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_REDIRECT
 import com.devjk.penguin.controller.AuthController.Companion.AUTH_VALUE
 import com.devjk.penguin.controller.AuthController.Companion.OAUTH_STATE
@@ -25,19 +25,7 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
-
-/**
- *
- *  todo -> 이거 테스트 코드 작성해야함.
- *  1. 로그인 시나리오 작성한다. - o
- *  2. 내부 도메인 / 외부도메인
- *  3. 권한 별 작동 테스트케이스 시나리오 먼저 정리 - o
- *  4. 로컬에서 테스트 - o
- *  5. DB 연결방안 찾을 것.
- *. 6. 리얼에서 테스트
- *
- */
-class AuthTest : PenguinTester() {
+class AuthTest : PenguinAuthTester() {
 
     @Test
     @DisplayName(

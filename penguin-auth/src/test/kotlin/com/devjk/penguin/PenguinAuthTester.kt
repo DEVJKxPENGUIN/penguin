@@ -19,13 +19,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.mock.web.MockHttpSession
 import org.springframework.test.web.servlet.MockMvc
-import java.util.*
 
 @SpringBootTest
 @Import(TestConfig::class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-class PenguinTester {
+class PenguinAuthTester {
 
     @Autowired
     lateinit var session: MockHttpSession

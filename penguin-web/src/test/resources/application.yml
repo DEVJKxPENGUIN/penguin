@@ -1,0 +1,7 @@
+db-host: "localhost:5432"
+db-username: "root"
+db-password: "develop"
+
+spring:
+  profiles:
+    active: "local"
