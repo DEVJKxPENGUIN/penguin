@@ -143,10 +143,10 @@ spec:
             }
         }
         success {
-            slackSend(channel: '#penguin-cicd', message: "${params.role} :tada:  Build integration success! #${BUILD_NUMBER}")
+            slackSend(channel: '#penguin-cicd', message: "${params.role} :tada: Build integration success! #${BUILD_NUMBER}")
         }
         failure {
-            slackSend(channel: '#penguin-cicd', message: "${params.role} :boom:  Build integration failed #${BUILD_NUMBER}")
+            slackSend(channel: '#penguin-cicd', message: "${params.role} :white_check_mark: Build integration failed #${BUILD_NUMBER}")
         }
     }
 }
