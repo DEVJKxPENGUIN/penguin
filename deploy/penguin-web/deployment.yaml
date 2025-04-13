@@ -15,10 +15,17 @@ spec:
     spec:
       containers:
         - name: penguin-web
-          image: 10.105.58.187:5000/penguin-web:119
+          image: 10.105.58.187:5000/penguin-web:139
           imagePullPolicy: Always
           envFrom:
           - secretRef:
               name: penguin-secret
           ports:
           - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
