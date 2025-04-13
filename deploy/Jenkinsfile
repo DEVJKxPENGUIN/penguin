@@ -61,9 +61,13 @@ spec:
                         withCredentials([string(credentialsId: 'penguin-unit-test', variable: 'PENGUIN_UNIT_TEST')]) {
                             writeFile(file: '.env.secret', text: PENGUIN_UNIT_TEST)
 
+                            sh 'ls -la'
+                            sh 'cat .env.secret'
+
                             def testOutput = sh(
                                     script: """
                                         set -a
+                                        pwd
                                         . .env.secret
                                         set +a
                                         ./run_local.sh -${params.role} -test
