@@ -3,6 +3,7 @@ package com.devjk.penguin.controller
 import com.devjk.penguin.utils.JwtHelper
 import com.devjk.penguin.utils.JwtHelper.Companion.KID
 import com.devjk.penguin.utils.JwtHelper.Companion.KTY
+import com.devjk.penguin.utils.UrlUtils
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,8 +19,8 @@ class JwkController(
     fun openIdConfiguration(): ResponseEntity<*> {
         return ResponseEntity.ok(
             OpenIdConfigurationResponse(
-                issuer = "https://auth.devjk.me",
-                jwks_uri = "https://auth.devjk.me/.well-known/jwks.json",
+                issuer = UrlUtils.serverAuth(),
+                jwks_uri = "${UrlUtils.serverAuth()}/.well-known/jwks.json",
                 id_token_signing_alg_values_supported = listOf("RS256")
             )
         )

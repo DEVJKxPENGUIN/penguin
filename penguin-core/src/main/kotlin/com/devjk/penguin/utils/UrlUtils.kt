@@ -34,7 +34,7 @@ class UrlUtils {
             return if (Profiles.isLocal()) {
                 "http://localhost:8082"
             } else {
-                "https://auth.devjk.me"
+                "https://auth.penguintribe.net"
             }
         }
 
@@ -42,7 +42,7 @@ class UrlUtils {
             return if (Profiles.isLocal()) {
                 "http://localhost:8081"
             } else {
-                "https://devjk.me"
+                "https://penguintribe.net"
             }
         }
 

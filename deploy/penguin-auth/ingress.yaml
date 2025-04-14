@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: auth.devjk.me
+  - host: auth.penguintribe.net
     http:
       paths:
       - path: /
