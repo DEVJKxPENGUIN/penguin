@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 ARG JAR_FILE=./build/libs/penguin-web-0.0.1-SNAPSHOT.jar
 
