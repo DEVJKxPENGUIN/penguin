@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>코딩하는또히</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body class="overflow-hidden m-0 h-screen">
@@ -20,7 +21,7 @@
 
     <div class="flex flex-col w-full justify-center">
       <div class="flex justify-center content-center">
-        <h1 class="text-3xl font-bold" th:text="${message}"></h1>
+        <h1 class="text-3xl font-bold animate-fade-in-up-grow" th:text="${message}"></h1>
       </div>
       <div class="flex justify-center content-center">
         <img
@@ -36,7 +37,7 @@
           <p th:if="${isCreated}" class="text-lg text-gray-600 mb-10 text-center">
             프로젝트가 생성되었어요!<br> 이제 프로젝트를 시작할 준비가 되었어요.
           </p>
-          <div class="flex flex-col gap-4 w-88">
+          <div class="flex flex-col gap-4 w-96">
             <div>
               <p class="text-blue-300 text-sm ml-2 mb-1">프로젝트 ID</p>
               <input type="text"

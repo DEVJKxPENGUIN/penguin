@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>코딩하는또히</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="overflow-hidden m-0 h-screen">
+<div id="app" class="flex flex-col w-full h-full px-10">
+  <div class="top flex w-full h-20 outline-slate-500 border-b-2">
+    <div class="lefttop flex flex-row flex-1 h-full place-items-center">
+      <div class="title mx-2" onclick="goHome()"><h1 class="text-3xl font-bold"
+                                                     th:text="${title}"></h1></div>
+    </div>
+    <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
+    </div>
+  </div>
+  <div class="body flex w-full h-full justify-center">
+
+    <div class="flex flex-col w-full justify-center">
+      <div class="flex justify-center content-center">
+        <h1 class="text-3xl font-bold animate-fade-in-up-grow" th:text="${message}"></h1>
+      </div>
+      <div class="flex justify-center content-center">
+        <img
+            src="https://avatars.githubusercontent.com/u/179611159?s=400&u=0e426646f29ce7e6b1e8108031fc0f529b89bb5e&v="/>
+      </div>
+
+    </div>
+    <div class="flex flex-col w-full justify-center">
+      <div class="border-l-2">
+        <!-- todo : project page. -->
+        <div class="flex flex-col items-center justify-center px-10 py-10">
+          <h2 class="text-4xl font-bold mb-6" th:text="${errorTitle}"></h2>
+          <p class="text-lg text-gray-600 mb-10 text-center" th:text="${errorMessage}">
+            <!-- Error message will be displayed here -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script th:inline="javascript">
+  function goHome() {
+    location.href = [[${serverHomeUrl}]]
+  }
+</script>
+<style>
+  .title {
+    cursor: pointer;
+  }
+</style>
+</html>

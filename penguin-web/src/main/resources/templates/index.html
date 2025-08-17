@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>코딩하는또히</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body class="overflow-hidden m-0 h-screen">
@@ -30,7 +31,7 @@
 
     <div class="flex flex-col w-full justify-center">
       <div class="flex justify-center content-center">
-        <h1 class="text-3xl font-bold" th:text="${message}"></h1>
+        <h1 class="text-3xl font-bold animate-fade-in-up-grow" th:text="${message}"></h1>
       </div>
       <div class="flex justify-center content-center">
         <img
@@ -49,7 +50,7 @@
             <a class="text-cyan-500" th:href="${serverHomeUrl} + '/project/' + ${oidc.getId()}"
                th:text="${oidc.getProjectName()}"></a>
           </li>
-          <li th:if="${oidcs.isEmpty()}">
+          <li>
             <a class="text-cyan-500 font-bold" th:href="${projectStartUrl}">나만의 펭귄
               프로젝트 시작하기</a>
           </li>

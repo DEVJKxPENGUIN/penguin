@@ -10,4 +10,6 @@ interface OidcUserRepository : JpaRepository<OidcUser, Long> {
     fun findByOwnerId(ownerId: Long): List<OidcUser>
 
     fun findByIdAndOwnerId(id: Long, ownerId: Long): OidcUser?
+
+    fun findByOwnerIdAndProjectName(ownerId: Long, projectName: String): OidcUser?
 }

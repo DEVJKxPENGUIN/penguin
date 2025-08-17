@@ -1,10 +1,15 @@
 package com.devjk.penguin.utils
 
 import com.devjk.penguin.domain.oidc.OidcProvider
+import java.net.URLEncoder
 
 class UrlUtils {
 
     companion object {
+
+        fun errorUrl(message: String?): String {
+            return "${serverHome()}/errors?message=${URLEncoder.encode(message)}"
+        }
 
         fun loginUrl(): String {
             return "${serverHome()}/user/login"

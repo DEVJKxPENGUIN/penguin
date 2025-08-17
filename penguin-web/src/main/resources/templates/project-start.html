@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <title>코딩하는또히</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body class="overflow-hidden m-0 h-screen">
 <div id="app" class="flex flex-col w-full h-full px-10">
   <div class="top flex w-full h-20 outline-slate-500 border-b-2">
     <div class="lefttop flex flex-row flex-1 h-full place-items-center">
-      <div class="title mx-2" onclick="goHome()"><h1 class="text-3xl font-bold" th:text="${title}"></h1></div>
+      <div class="title mx-2" onclick="goHome()"><h1 class="text-3xl font-bold"
+                                                     th:text="${title}"></h1></div>
     </div>
     <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
     </div>
@@ -19,7 +21,7 @@
 
     <div class="flex flex-col w-full justify-center">
       <div class="flex justify-center content-center">
-        <h1 class="text-3xl font-bold" th:text="${message}"></h1>
+        <h1 class="text-3xl font-bold animate-fade-in-up-grow" th:text="${message}"></h1>
       </div>
       <div class="flex justify-center content-center">
         <img
@@ -30,7 +32,8 @@
     <div class="flex flex-col w-full justify-center">
       <div class="border-l-2">
         <!-- todo : project page. -->
-        <form id="projectForm" th:action="${projectCreateUrl}" method="post" onsubmit="return validateForm()">
+        <form id="projectForm" th:action="${projectCreateUrl}" method="post"
+              onsubmit="return validateForm()">
           <div class="flex flex-col items-center justify-center px-10 py-10">
             <h2 class="text-4xl font-bold mb-6">펭귄마을에 새로운 프로젝트 건설하기</h2>
             <p class="text-lg text-gray-600 mb-10 text-center">
@@ -44,7 +47,8 @@
                        id="projectNameInput"
                        name="projectName"
                 />
-                <p id="projectNameError" class="text-red-500 text-sm mt-1 ml-2" style="display: none;"></p>
+                <p id="projectNameError" class="text-red-500 text-sm mt-1 ml-2"
+                   style="display: none;"></p>
               </div>
               <div>
                 <input type="text"
@@ -53,15 +57,18 @@
                        id="redirectUrlInput"
                        name="redirectUrl"
                 />
-                <p id="redirectUrlError" class="text-red-500 text-sm mt-1 ml-2" style="display: none;"></p>
+                <p id="redirectUrlError" class="text-red-500 text-sm mt-1 ml-2"
+                   style="display: none;"></p>
               </div>
               <button
                   type="submit"
                   class="group h-12 px-6 border-2 border-gray-300 rounded-full transition duration-300 hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100"
               >
                 <div class="relative flex items-center space-x-4 justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="absolute left-0 w-5 text-gray-700" viewBox="0 0 24 24">
-                    <path d="M22.2 14.4L21 13.2l-3.6-3.6c-1.1-1.1-2.1-1.6-3.2-1.6s-2.1.5-3.2 1.6L9 11.6l-4.4-4.4c-.4-.4-1-.4-1.4 0l-2.4 2.4c-.4.4-.4 1 0 1.4l4.4 4.4-1.2 1.2c-1.1 1.1-1.6 2.1-1.6 3.2s.5 2.1 1.6 3.2l3.6 3.6c1.1 1.1 2.1 1.6 3.2 1.6s2.1-.5 3.2-1.6l1.2-1.2 4.4 4.4c.4.4 1 .4 1.4 0l2.4-2.4c.4-.4.4-1 0-1.4l-4.4-4.4 1.2-1.2c1.1-1.1 1.6-2.1 1.6-3.2s-.5-2.1-1.6-3.2zM12 20.4c-.6 0-1.1-.2-1.6-.7l-3.6-3.6c-.9-1-1.4-2-1.4-3.1s.5-2.1 1.4-3.1l1.2-1.2 7.1 7.1-1.2 1.2c-.5.4-1 .6-1.6.6zm7.1-7.1l-7.1-7.1 1.2-1.2c1-.9 2-1.4 3.1-1.4s2.1.5 3.1 1.4l3.6 3.6c.9 1 1.4 2 1.4 3.1s-.5 2.1-1.4 3.1l-1.2 1.2z"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                       class="absolute left-0 w-5 text-gray-700" viewBox="0 0 24 24">
+                    <path
+                        d="M22.2 14.4L21 13.2l-3.6-3.6c-1.1-1.1-2.1-1.6-3.2-1.6s-2.1.5-3.2 1.6L9 11.6l-4.4-4.4c-.4-.4-1-.4-1.4 0l-2.4 2.4c-.4.4-.4 1 0 1.4l4.4 4.4-1.2 1.2c-1.1 1.1-1.6 2.1-1.6 3.2s.5 2.1 1.6 3.2l3.6 3.6c1.1 1.1 2.1 1.6 3.2 1.6s2.1-.5 3.2-1.6l1.2-1.2 4.4 4.4c.4.4 1 .4 1.4 0l2.4-2.4c.4-.4.4-1 0-1.4l-4.4-4.4 1.2-1.2c1.1-1.1 1.6-2.1 1.6-3.2s-.5-2.1-1.6-3.2zM12 20.4c-.6 0-1.1-.2-1.6-.7l-3.6-3.6c-.9-1-1.4-2-1.4-3.1s.5-2.1 1.4-3.1l1.2-1.2 7.1 7.1-1.2 1.2c-.5.4-1 .6-1.6.6zm7.1-7.1l-7.1-7.1 1.2-1.2c1-.9 2-1.4 3.1-1.4s2.1.5 3.1 1.4l3.6 3.6c.9 1 1.4 2 1.4 3.1s-.5 2.1-1.4 3.1l-1.2 1.2z"/>
                   </svg>
                   <span
                       class="block w-max font-semibold tracking-wide text-gray-700 text-sm transition text-black duration-300 group-hover:text-blue-600 sm:text-base">
@@ -83,6 +90,12 @@
 </div>
 </body>
 <script th:inline="javascript">
+
+  window.onload = function () {
+    document.getElementById('projectForm').reset()
+    document.getElementById('projectNameInput').focus()
+  }
+
   function goHome() {
     location.href = [[${serverHomeUrl}]];
   }

@@ -36,6 +36,11 @@ class ProjectService(
         redirectUris: List<String>
     ): Pair<OidcUser, String> {
         val oidcUser = OidcUser.create(projectName, redirectUris, user.id)
+
+        oidcUserRepository.findByOwnerIdAndProjectName(user.id, projectName)?.let {
+            throw BaseException(ErrorCode.OIDC_PROJECT_ALREADY_EXISTS, "이미 같은 이름의 프로젝트가 있어요")
+        }
+
         val savedUser = oidcUserRepository.save(oidcUser.first)
         return Pair(savedUser, oidcUser.second)
     }
