@@ -30,6 +30,18 @@ class UrlUtils {
             return "${serverAuth()}/callback"
         }
 
+        fun projectStartUrl(): String {
+            return "${serverHome()}/project/start"
+        }
+
+        fun projectCreateUrl(): String {
+            return "${serverHome()}/project"
+        }
+
+        fun projectUrl(oidcId: Long): String {
+            return "${serverHome()}/project/$oidcId"
+        }
+
         fun serverAuth(): String {
             return if (Profiles.isLocal()) {
                 "http://localhost:8082"

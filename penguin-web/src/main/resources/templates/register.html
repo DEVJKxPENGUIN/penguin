@@ -33,9 +33,9 @@
         <!-- todo : register page. -->
         <form th:action="${signupUrl}" method="post">
           <div class="flex flex-col items-center justify-center px-10 py-10">
-            <h2 class="text-4xl font-bold mb-6">펭귄마을 주민이 되어요.</h2>
+            <h2 class="text-4xl font-bold mb-6">펭귄마을 원주민이 되어요.</h2>
             <p class="text-lg text-gray-600 mb-10 text-center">
-              서비스 이용하려면 먼저 가입해 주세요.<br>닉네임을 입력한 후 가입하기 버튼을 눌러주세요.
+              펭귄마을을 이용하려면 전입신고가 필요해요.<br>닉네임을 입력한 후 전입신고 버튼을 눌러주세요.
             </p>
             <div class="flex flex-col gap-4 w-72">
               <input type="hidden" name="state" th:value="${state}"/>
@@ -55,7 +55,7 @@
                        class="absolute left-0 w-5" alt="google logo">
                   <span
                       class="block w-max font-semibold tracking-wide text-gray-700 text-black text-sm transition duration-300 group-hover:text-blue-600 sm:text-base">
-                  가입하기
+                  펭귄마을 전입신고하기
                 </span>
                 </div>
               </button>
@@ -74,7 +74,7 @@
                   </svg>
                   <span
                       class="block w-max font-semibold tracking-wide text-gray-700 text-sm transition text-black duration-300 group-hover:text-blue-600 sm:text-base">
-                  가입하기
+                  펭귄마을 전입신고하기
                 </span>
                 </div>
               </button>

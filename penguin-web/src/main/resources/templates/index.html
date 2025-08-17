@@ -10,7 +10,8 @@
 <div id="app" class="flex flex-col w-full h-full px-10">
   <div class="top flex w-full h-20 outline-slate-500 border-b-2">
     <div class="lefttop flex flex-row flex-1 h-full place-items-center">
-      <div class="mx-2"><h1 class="text-3xl font-bold" th:text="${title}"></h1></div>
+      <div class="title mx-2" onclick="goHome()"><h1 class="text-3xl font-bold"
+                                                     th:text="${title}"></h1></div>
     </div>
     <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
       <div class="mx-2 text-cyan-500 cursor-pointer" onclick="logout()"
@@ -20,8 +21,9 @@
            th:if="${user.isGuest()}">로그인
       </div>
       <div class="mx-2" th:text="${user.email}"></div>
-      <div class="mx-2" >|</div>
-      <div class="mx-2" th:text="'[' + ${user.role.description()} + '] ' + ${user.nickname} + ' 님'"></div>
+      <div class="mx-2">|</div>
+      <div class="mx-2"
+           th:text="'[' + ${user.role.description()} + '] ' + ${user.nickname} + ' 님'"></div>
     </div>
   </div>
   <div class="body flex w-full h-full justify-center">
@@ -42,20 +44,38 @@
           <ul class="text-4xl mb-6">Navigator</ul>
         </div>
         <div class="flex flex-col justify-center content-center pl-20 pb-10">
+          <ul class="text-xl mb-2">Your Running Projects</ul>
+          <li th:each="oidc : ${oidcs}">
+            <a class="text-cyan-500" th:href="${serverHomeUrl} + '/project/' + ${oidc.getId()}"
+               th:text="${oidc.getProjectName()}"></a>
+          </li>
+          <li th:if="${oidcs.isEmpty()}">
+            <a class="text-cyan-500 font-bold" th:href="${projectStartUrl}">나만의 펭귄
+              프로젝트 시작하기</a>
+          </li>
+          <!--          <li><a class="text-cyan-500" href="https://penguintribe.net">서버 홈(https://penguintribe.net)</a></li>-->
+          <!--          <li><a class="text-cyan-500" href="https://kubernetes.penguintribe.net">k8s-->
+          <!--            대시보드(https://kubernetes.penguintribe.net)</a></li>-->
+          <!--          <li><a class="text-cyan-500"-->
+          <!--                 href="https://jenkins.penguintribe.net">젠킨스(https://jenkins.penguintribe.net)</a></li>-->
+          <!--          <li><a class="text-cyan-500" href="https://argocd.penguintribe.net">ARGO-->
+          <!--            CD(https://argocd.penguintribe.net)</a></li>-->
+        </div>
+        <div class="flex flex-col justify-center content-center pl-20 pb-10">
           <ul class="text-xl mb-2">Server Management Tools</ul>
-          <li><a class="text-cyan-500" href="https://penguintribe.net">서버 홈(https://penguintribe.net)</a></li>
+          <li><a class="text-cyan-500" th:href="${serverHomeUrl}">서버 홈(https://penguintribe.net)</a>
+          </li>
           <li><a class="text-cyan-500" href="https://kubernetes.penguintribe.net">k8s
             대시보드(https://kubernetes.penguintribe.net)</a></li>
           <li><a class="text-cyan-500"
-                 href="https://jenkins.penguintribe.net">젠킨스(https://jenkins.penguintribe.net)</a></li>
+                 href="https://jenkins.penguintribe.net">젠킨스(https://jenkins.penguintribe.net)</a>
+          </li>
           <li><a class="text-cyan-500" href="https://argocd.penguintribe.net">ARGO
             CD(https://argocd.penguintribe.net)</a></li>
         </div>
         <div class="flex flex-col justify-center content-center pl-20 pb-10">
           <ul class="text-xl mb-2">Running Services</ul>
-          <li><a class="text-cyan-500" href="https://trinity-log.in">TRINITY-LOG(https://trinity-log.in)</a>
-          </li>
-          <li><a class="text-cyan-500" href="https://clubtetrix.space">CLUB-TETRIX(https://clubtetrix.space)</a>
+          <li><a class="text-cyan-500" href="https://devume.ink">DEVUME(https://devume.ink)</a>
           </li>
           <li><a class="text-cyan-200" href="#">TRINITY(Coming Soon)</a></li>
         </div>
@@ -76,7 +96,14 @@
   function logout() {
     location.href = [[${logoutUrl}]]
   }
+
+  function goHome() {
+    location.href = [[${serverHomeUrl}]]
+  }
 </script>
 <style>
+  .title {
+    cursor: pointer;
+  }
 </style>
 </html>

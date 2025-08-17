@@ -4,29 +4,17 @@ USE penguin;
 
 CREATE TABLE penguin.user
 (
-    id            bigint auto_increment not null,
-    nickname      varchar(255)          not null,
-    email         varchar(255)          not null,
-    id_token      text                  null,
-    last_login_at timestamp             null,
-    created_at    timestamp             not null,
-    updated_at    timestamp             not null,
-    primary key (id)
+    id            bigint auto_increment primary key,
+    provider      varchar(100) default 'google' not null,
+    provider_id   varchar(100)                  not null,
+    nickname      varchar(255)                  not null,
+    email         varchar(255)                  null,
+    role          varchar(100) default 'NORMAL' not null,
+    id_token      text                          null,
+    last_login_at timestamp                     null,
+    created_at    timestamp                     not null,
+    updated_at    timestamp                     not null
 );
-
-INSERT INTO penguin.user (nickname, email, last_login_at, created_at, updated_at)
-values ('devjk',
-        'dfjung4254@gmail.com',
-        now(),
-        now(),
-        now());
-
-INSERT INTO penguin.user (nickname, email, last_login_at, created_at, updated_at)
-values ('ddohee',
-        'zohi3857@gmail.com',
-        now(),
-        now(),
-        now());
 
 CREATE TABLE penguin.oidc_user
 (
@@ -41,15 +29,3 @@ CREATE TABLE penguin.oidc_user
     updated_at    datetime     not null comment '수정 일시'
 )
     comment 'penguin oidc user';
-
-INSERT INTO penguin.oidc_user (client_id, client_secret, project_name, owner_id, redirect_uris,
-                               scopes, created_at, updated_at)
-VALUES ('penguin-client',
-        'penguin-secret',
-        'penguin-project',
-        1,
-        'http://localhost:3000/callback',
-        'openid, profile, email',
-        now(),
-        now());
-

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>코딩하는또히</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="overflow-hidden m-0 h-screen">
+<div id="app" class="flex flex-col w-full h-full px-10">
+  <div class="top flex w-full h-20 outline-slate-500 border-b-2">
+    <div class="lefttop flex flex-row flex-1 h-full place-items-center">
+      <div class="title mx-2" onclick="goHome()"><h1 class="text-3xl font-bold"
+                                                     th:text="${title}"></h1></div>
+    </div>
+    <div class="righttop flex flex-row-reverse flex-1 h-full place-items-center">
+    </div>
+  </div>
+  <div class="body flex w-full h-full justify-center">
+
+    <div class="flex flex-col w-full justify-center">
+      <div class="flex justify-center content-center">
+        <h1 class="text-3xl font-bold" th:text="${message}"></h1>
+      </div>
+      <div class="flex justify-center content-center">
+        <img
+            src="https://avatars.githubusercontent.com/u/179611159?s=400&u=0e426646f29ce7e6b1e8108031fc0f529b89bb5e&v="/>
+      </div>
+
+    </div>
+    <div class="flex flex-col w-full justify-center">
+      <div class="border-l-2">
+        <!-- todo : project page. -->
+        <div class="flex flex-col items-center justify-center px-10 py-10">
+          <h2 class="text-4xl font-bold mb-6" th:text="'프로젝트 : ' + ${oidc.getProjectName()}"></h2>
+          <p th:if="${isCreated}" class="text-lg text-gray-600 mb-10 text-center">
+            프로젝트가 생성되었어요!<br> 이제 프로젝트를 시작할 준비가 되었어요.
+          </p>
+          <div class="flex flex-col gap-4 w-88">
+            <div>
+              <p class="text-blue-300 text-sm ml-2 mb-1">프로젝트 ID</p>
+              <input type="text"
+                     class="h-12 px-4 border-2 rounded-full border-blue-400 align-center w-full"
+                     th:value="${oidc.getId()}"
+                     disabled
+              />
+            </div>
+            <div>
+              <p class="text-blue-300 text-sm ml-2 mb-1">ClientID</p>
+              <input type="text"
+                     class="h-12 px-4 border-2 rounded-full border-blue-400 align-center w-full"
+                     th:value="${oidc.getClientId()}"
+                     disabled
+              />
+            </div>
+            <div>
+              <p class="text-blue-300 text-sm ml-2 mb-1">ClientSecret</p>
+              <p th:if="${isCreated}" class="text-red-500 text-sm ml-2 mb-1">ClientSecret 은 한번만 노출 되어요. 복사 후 소중하게 보관해주세요.</p>
+              <input type="text"
+                     class="h-12 px-4 border-2 rounded-full border-blue-400 align-center w-full"
+                     th:value="${clientSecret}"
+                     disabled
+              />
+            </div>
+            <div>
+              <p class="text-blue-300 text-sm ml-2 mb-1">Redirect URLs</p>
+              <input type="text"
+                     class="h-12 px-4 border-2 rounded-full border-blue-400 align-center w-full"
+                     th:value="${oidc.getRedirectUris()}"
+                     disabled
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script th:inline="javascript">
+  function goHome() {
+    location.href = [[${serverHomeUrl}]]
+  }
+</script>
+<style>
+  .title {
+    cursor: pointer;
+  }
+</style>
+</html>

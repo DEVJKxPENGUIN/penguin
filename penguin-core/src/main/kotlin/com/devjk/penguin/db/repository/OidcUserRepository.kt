@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface OidcUserRepository : JpaRepository<OidcUser, Long> {
+
+    fun findByOwnerId(ownerId: Long): List<OidcUser>
+
+    fun findByIdAndOwnerId(id: Long, ownerId: Long): OidcUser?
 }

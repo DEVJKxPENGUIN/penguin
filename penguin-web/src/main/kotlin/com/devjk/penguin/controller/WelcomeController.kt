@@ -3,13 +3,16 @@ package com.devjk.penguin.controller
 import com.devjk.penguin.domain.oidc.AuthUser
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
+import com.devjk.penguin.service.ProjectService
 import com.devjk.penguin.utils.UrlUtils
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
-class WelcomeController {
+class WelcomeController(
+    private val projectService: ProjectService
+) {
 
     @GetMapping("/")
     fun welcome(
@@ -25,8 +28,11 @@ class WelcomeController {
             model.addAttribute("user", AuthUser.ofGuest())
         }
 
+        model.addAttribute("oidcs", projectService.getUserOidcProjects(user))
         model.addAttribute("loginUrl", UrlUtils.loginUrl())
         model.addAttribute("logoutUrl", UrlUtils.logoutUrl() + "?rd=" + UrlUtils.serverHome())
+        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
+        model.addAttribute("projectStartUrl", UrlUtils.projectStartUrl())
         return "index"
     }
 }

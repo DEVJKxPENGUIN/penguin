@@ -2,7 +2,9 @@ package com.devjk.penguin.db.entity
 
 import com.devjk.penguin.framework.common.BaseEntity
 import jakarta.persistence.*
+import org.apache.commons.lang3.RandomStringUtils
 import java.io.Serializable
+import java.security.MessageDigest
 
 @Entity
 @Table(name = "\"oidc_user\"")
@@ -31,4 +33,36 @@ class OidcUser(
     @Column(name = "scopes")
     val scopes: String = "openid"
 ) : BaseEntity(), Serializable {
+
+    companion object {
+
+        fun create(
+            projectName: String,
+            redirectUris: List<String>,
+            ownerId: Long,
+        ): Pair<OidcUser, String> {
+            val clientId = "penguin-${
+                RandomStringUtils.secure().nextAlphanumeric(10)
+            }-${System.currentTimeMillis()}"
+            val clientSecret = RandomStringUtils.secure().nextAlphanumeric(32)
+            val clientSecretHashed = MessageDigest.getInstance("SHA-256").apply {
+                update(clientSecret.toByteArray())
+            }.digest().joinToString("") {
+                "%02x".format(it)
+            }
+
+            val oidc = OidcUser(
+                clientId = clientId,
+                clientSecret = clientSecretHashed,
+                projectName = projectName,
+                ownerId = ownerId,
+                redirectUris = redirectUris.joinToString(",")
+            )
+
+            return Pair(oidc, clientSecret)
+        }
+
+
+    }
+
 }

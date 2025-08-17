@@ -17,5 +17,7 @@ enum class ErrorCode(
     INVALID_OIDC_PROVIDER(HttpStatus.BAD_REQUEST, -7, "invalid oidc provider"),
     INVALID_SIGNUP_ACCESS(HttpStatus.BAD_REQUEST, -8, "invalid signup access"),
     OIDC_PROVIDER_AUTH_FAIL(HttpStatus.BAD_REQUEST, -9, "oidc provider auth fail"),
+    OIDC_PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, -10, "oidc project not found or access denied"),
+    INVALID_PROJECT_CREATION(HttpStatus.BAD_REQUEST, -11, "invalid project creation request"),
     ;
 }
