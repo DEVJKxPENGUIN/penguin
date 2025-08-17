@@ -39,18 +39,23 @@ class ProjectController(
         request: ProjectCreateRequest,
         redirectAttributes: RedirectAttributes
     ): String {
-        request.validate()
 
-        val (oidcUser, clientSecret) = projectService.createOidcProject(
-            user,
-            request.projectName,
-            request.redirectUrl.split(",")
-        )
+        try {
+            request.validate()
 
-        redirectAttributes.addFlashAttribute("clientSecret", clientSecret)
-        redirectAttributes.addFlashAttribute("isCreated", true)
+            val (oidcUser, clientSecret) = projectService.createOidcProject(
+                user,
+                request.projectName,
+                request.redirectUrl.split(",")
+            )
 
-        return "redirect:${UrlUtils.projectUrl(oidcUser.id)}"
+            redirectAttributes.addFlashAttribute("clientSecret", clientSecret)
+            redirectAttributes.addFlashAttribute("isCreated", true)
+
+            return "redirect:${UrlUtils.projectUrl(oidcUser.id)}"
+        } catch (e: BaseException) {
+            return "redirect:${UrlUtils.errorUrl(e.detailMessage)}"
+        }
     }
 
     @GetMapping("/project/{oidcId}")
