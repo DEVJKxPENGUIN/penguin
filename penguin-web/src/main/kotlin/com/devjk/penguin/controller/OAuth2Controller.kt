@@ -70,6 +70,20 @@ class OAuth2Controller(
 
         return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.SUCCESS, code)
     }
+
+    @GetMapping("/consent/disagree")
+    fun consentDisagree(
+        @PenguinUser(Role.NORMAL) user: AuthUser,
+        model: Model
+    ): String {
+        val request =
+            session.getAttribute("authorize") as OAuth2AuthorizeRequest? ?: throw BaseException(
+                ErrorCode.INVALID_REQUEST,
+                "invalid access"
+            )
+
+        return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.USER_DENIED)
+    }
 }
 
 data class OAuth2AuthorizeRequest(
