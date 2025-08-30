@@ -16,7 +16,7 @@ CREATE TABLE penguin.user
     updated_at    timestamp                     not null
 );
 
-CREATE TABLE penguin.oidc_user
+CREATE TABLE penguin.oidc_project
 (
     id            bigint auto_increment primary key comment 'id',
     client_id     varchar(255) not null unique comment '발급한 client_id',
@@ -28,4 +28,17 @@ CREATE TABLE penguin.oidc_user
     created_at    datetime     not null comment '생성 일시',
     updated_at    datetime     not null comment '수정 일시'
 )
-    comment 'penguin oidc user';
+    comment 'penguin oidc project';
+
+CREATE TABLE penguin.user_oidc_provision
+(
+    id         bigint auto_increment primary key comment 'id',
+    user_id    bigint       not null comment 'user id',
+    project_id bigint       not null comment 'oidc project id',
+    code       varchar(255) not null comment '제공동의 시 발급코드',
+    status     varchar(100) not null comment '제공 상태',
+    created_at datetime     not null comment '생성 일시',
+    updated_at datetime     not null comment '수정 일시',
+    unique key uk_user_project (user_id, project_id)
+)
+    comment 'user가 oidc project에 대해 제공한 정보';

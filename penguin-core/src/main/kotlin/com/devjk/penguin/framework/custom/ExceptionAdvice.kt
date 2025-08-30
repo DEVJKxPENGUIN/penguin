@@ -4,6 +4,7 @@ import com.devjk.penguin.framework.common.BaseResponse
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -12,17 +13,24 @@ class ExceptionAdvice {
 
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(e: BaseException): ResponseEntity<*> {
-        return handleResponse(e.errorCode, e)
+        return handleResponse(e.errorCode, e.message)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleRequestException(e: MethodArgumentNotValidException): ResponseEntity<*> {
+        return handleResponse(ErrorCode.INVALID_REQUEST, e.bindingResult.fieldError?.defaultMessage)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<*> {
-        return handleResponse(ErrorCode.UNKNOWN, e)
+        return handleResponse(ErrorCode.UNKNOWN, "알 수 없는 오류가 발생했습니다.")
     }
 
-    private fun handleResponse(errorCode: ErrorCode, e: Exception): ResponseEntity<*> {
-        e.printStackTrace()
+    private fun handleResponse(
+        errorCode: ErrorCode,
+        message: String?
+    ): ResponseEntity<*> {
         return ResponseEntity.status(errorCode.httpStatus)
-            .body(BaseResponse.error(errorCode, e.message ?: errorCode.message))
+            .body(BaseResponse.error(errorCode, message ?: errorCode.message))
     }
 }

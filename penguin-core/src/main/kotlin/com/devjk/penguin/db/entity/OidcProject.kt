@@ -7,9 +7,9 @@ import java.io.Serializable
 import java.security.MessageDigest
 
 @Entity
-@Table(name = "\"oidc_user\"")
+@Table(name = "\"oidc_project\"")
 @EntityListeners
-class OidcUser(
+class OidcProject(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,12 +35,11 @@ class OidcUser(
 ) : BaseEntity(), Serializable {
 
     companion object {
-
         fun create(
             projectName: String,
             redirectUris: List<String>,
             ownerId: Long,
-        ): Pair<OidcUser, String> {
+        ): Pair<OidcProject, String> {
             val clientId = "penguin-${
                 RandomStringUtils.secure().nextAlphanumeric(10)
             }-${System.currentTimeMillis()}"
@@ -51,7 +50,7 @@ class OidcUser(
                 "%02x".format(it)
             }
 
-            val oidc = OidcUser(
+            val oidc = OidcProject(
                 clientId = clientId,
                 clientSecret = clientSecretHashed,
                 projectName = projectName,
@@ -61,8 +60,15 @@ class OidcUser(
 
             return Pair(oidc, clientSecret)
         }
-
-
     }
 
+    fun isNotMatchedUser(redirectUri: String, scope: String): Boolean {
+        val uri = if (redirectUri.contains("://")) {
+            redirectUri.substring(redirectUri.indexOf("://") + 3)
+        } else {
+            redirectUri
+        }
+
+        return !(redirectUris.split(",").contains(uri) && scopes.split(",").contains(scope))
+    }
 }

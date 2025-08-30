@@ -20,5 +20,6 @@ enum class ErrorCode(
     OIDC_PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, -10, "oidc project not found or access denied"),
     OIDC_PROJECT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, -11, "oidc project already exists"),
     INVALID_PROJECT_CREATION(HttpStatus.BAD_REQUEST, -12, "invalid project creation request"),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, -13, "invalid request"),
     ;
 }

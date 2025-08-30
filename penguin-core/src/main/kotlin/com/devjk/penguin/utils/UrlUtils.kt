@@ -2,21 +2,35 @@ package com.devjk.penguin.utils
 
 import com.devjk.penguin.domain.oidc.OidcProvider
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class UrlUtils {
 
     companion object {
 
         fun errorUrl(message: String?): String {
-            return "${serverHome()}/errors?message=${URLEncoder.encode(message)}"
+            return "${serverHome()}/errors?message=${
+                URLEncoder.encode(
+                    message,
+                    StandardCharsets.UTF_8
+                )
+            }"
         }
 
-        fun loginUrl(): String {
-            return "${serverHome()}/user/login"
+        fun loginUrl(rd: String? = null): String {
+            return "${serverHome()}/user/login${rd?.let { "?rd=$it" } ?: ""}"
+        }
+
+        fun oauthConsentAgreeUrl(): String {
+            return "${serverHome()}/oauth2/consent/agree"
+        }
+
+        fun oauthConsentDisagreeUrl(): String {
+            return "${serverHome()}/oauth2/consent/disagree"
         }
 
         fun startOidcProviderUrl(provider: String, rd: String?): String {
-            return "${serverAuth()}/start?provider=$provider&rd=${rd ?: serverHome()}"
+            return "${serverAuth()}/start?provider=$provider&rd=${URLEncoder.encode(rd ?: serverHome(), StandardCharsets.UTF_8)}"
         }
 
         fun userRegisterUrl(provider: OidcProvider, state: String): String {
