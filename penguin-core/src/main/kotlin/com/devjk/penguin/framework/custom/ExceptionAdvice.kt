@@ -13,23 +13,25 @@ class ExceptionAdvice {
 
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(e: BaseException): ResponseEntity<*> {
-        return handleResponse(e.errorCode, e.message)
+        return handleResponse(e, e.errorCode, e.message)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleRequestException(e: MethodArgumentNotValidException): ResponseEntity<*> {
-        return handleResponse(ErrorCode.INVALID_REQUEST, e.bindingResult.fieldError?.defaultMessage)
+        return handleResponse(e, ErrorCode.INVALID_REQUEST, e.bindingResult.fieldError?.defaultMessage)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<*> {
-        return handleResponse(ErrorCode.UNKNOWN, "알 수 없는 오류가 발생했습니다.")
+        return handleResponse(e, ErrorCode.UNKNOWN, "알 수 없는 오류가 발생했습니다.")
     }
 
     private fun handleResponse(
+        e: Exception,
         errorCode: ErrorCode,
         message: String?
     ): ResponseEntity<*> {
+        e.printStackTrace()
         return ResponseEntity.status(errorCode.httpStatus)
             .body(BaseResponse.error(errorCode, message ?: errorCode.message))
     }

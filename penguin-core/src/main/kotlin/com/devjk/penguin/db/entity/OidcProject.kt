@@ -1,6 +1,8 @@
 package com.devjk.penguin.db.entity
 
 import com.devjk.penguin.framework.common.BaseEntity
+import com.devjk.penguin.framework.error.ErrorCode
+import com.devjk.penguin.framework.error.exception.BaseException
 import jakarta.persistence.*
 import org.apache.commons.lang3.RandomStringUtils
 import java.io.Serializable
@@ -44,21 +46,24 @@ class OidcProject(
                 RandomStringUtils.secure().nextAlphanumeric(10)
             }-${System.currentTimeMillis()}"
             val clientSecret = RandomStringUtils.secure().nextAlphanumeric(32)
-            val clientSecretHashed = MessageDigest.getInstance("SHA-256").apply {
-                update(clientSecret.toByteArray())
-            }.digest().joinToString("") {
-                "%02x".format(it)
-            }
 
             val oidc = OidcProject(
                 clientId = clientId,
-                clientSecret = clientSecretHashed,
+                clientSecret = this.hash(clientSecret),
                 projectName = projectName,
                 ownerId = ownerId,
                 redirectUris = redirectUris.joinToString(",")
             )
 
             return Pair(oidc, clientSecret)
+        }
+
+        private fun hash(clientSecret: String): String {
+            return MessageDigest.getInstance("SHA-256").apply {
+                update(clientSecret.toByteArray())
+            }.digest().joinToString("") {
+                "%02x".format(it)
+            }
         }
     }
 
@@ -70,5 +75,11 @@ class OidcProject(
         }
 
         return !(redirectUris.split(",").contains(uri) && scopes.split(",").contains(scope))
+    }
+
+    fun checkMatchedClient(clientId: String, clientSecret: String) {
+        if (!(this.clientId == clientId && this.clientSecret == hash(clientSecret))) {
+            throw BaseException(ErrorCode.INVALID_OIDC_CLIENT, "Invalid clientId or clientSecret")
+        }
     }
 }

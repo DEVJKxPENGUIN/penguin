@@ -8,15 +8,16 @@ import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.OAuth2Service
 import com.devjk.penguin.utils.UrlUtils
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.BindParam
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.*
 import java.io.Serializable
 
 @Controller
@@ -84,6 +85,25 @@ class OAuth2Controller(
 
         return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.USER_DENIED)
     }
+
+    // fixme --> 이 api 검증중이었음.
+    @ResponseBody
+    @PostMapping("/token")
+    fun token(
+        @RequestBody @Valid request: TokenRequest
+    ): ResponseEntity<*> {
+        try {
+            val response = oAuth2Service.provideOpenIdConnect(request)
+            return ResponseEntity.ok(response)
+        } catch (e: BaseException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body<Any>(
+                mapOf(
+                    "error" to e.errorCode.value,
+                    "error_description" to e.message
+                )
+            )
+        }
+    }
 }
 
 data class OAuth2AuthorizeRequest(
@@ -95,4 +115,27 @@ data class OAuth2AuthorizeRequest(
     val scope: String?,
     @field:NotBlank(message = "State must not be blank")
     val state: String?
+) : Serializable
+
+data class TokenRequest(
+    @JsonProperty("client_id")
+    @field:NotBlank(message = "Client ID must not be blank")
+    val clientId: String?,
+    @JsonProperty("client_secret")
+    @field:NotBlank(message = "Client Secret must not be blank")
+    val clientSecret: String?,
+    @field:NotBlank(message = "Code must not be blank")
+    val code: String?
+) : Serializable {
+}
+
+data class TokenResponse(
+    @JsonProperty("id_token")
+    val idToken: String,
+    @JsonProperty("token_type")
+    val tokenType: String = "bearer",
+    @JsonProperty("expires_in")
+    val expiresIn: Long = 3600,
+    @JsonProperty("access_token")
+    val accessToken: String,
 ) : Serializable

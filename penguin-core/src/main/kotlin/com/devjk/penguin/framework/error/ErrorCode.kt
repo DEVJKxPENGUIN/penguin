@@ -13,7 +13,7 @@ enum class ErrorCode(
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, -3, "cannot find valid token"),
     NO_AUTHORIZED_ROLE(HttpStatus.FORBIDDEN, -4, "no authorized role"),
     INVALID_STATETOKEN(HttpStatus.BAD_REQUEST, -5, "invalid state token"),
-    UNREGISTERED_USER(HttpStatus.UNAUTHORIZED, -6, "unregistered user"),
+    USER_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, -6, "unable to find user"),
     INVALID_OIDC_PROVIDER(HttpStatus.BAD_REQUEST, -7, "invalid oidc provider"),
     INVALID_SIGNUP_ACCESS(HttpStatus.BAD_REQUEST, -8, "invalid signup access"),
     OIDC_PROVIDER_AUTH_FAIL(HttpStatus.BAD_REQUEST, -9, "oidc provider auth fail"),
@@ -21,5 +21,6 @@ enum class ErrorCode(
     OIDC_PROJECT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, -11, "oidc project already exists"),
     INVALID_PROJECT_CREATION(HttpStatus.BAD_REQUEST, -12, "invalid project creation request"),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, -13, "invalid request"),
+    INVALID_OIDC_CLIENT(HttpStatus.BAD_REQUEST, -14, "invalid clientId or clientSecret"),
     ;
 }

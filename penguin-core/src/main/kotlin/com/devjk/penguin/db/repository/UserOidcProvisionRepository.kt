@@ -12,4 +12,6 @@ interface UserOidcProvisionRepository : JpaRepository<UserOidcProvision, Long> {
     fun findByUserIdAndProjectIdAndStatus(userId: Long, projectId: Long, status: OidcProvisionStatus): UserOidcProvision?
 
     fun findByUserIdAndProjectId(userId: Long, projectId: Long): UserOidcProvision?
+
+    fun findByUserIdAndCode(userId: Long, code: String): UserOidcProvision?
 }

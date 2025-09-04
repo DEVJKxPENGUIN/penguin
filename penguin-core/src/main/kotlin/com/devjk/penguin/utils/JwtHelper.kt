@@ -45,6 +45,26 @@ class JwtHelper(
             .compact()
     }
 
+    // Oidc
+    fun createIdToken(id: Long, email: String?, nickname: String, clientId: String): String {
+        val privateKey = loadRsaPrivateKey()
+        val now = Instant.now()
+        return Jwts.builder()
+            .subject(id.toString())
+            .header()
+            .add("kid", KID)
+            .and()
+            .audience().add(clientId)
+            .and()
+            .issuer(UrlUtils.serverHome())
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plus(1, ChronoUnit.HOURS)))
+            .claim("email", email)
+            .claim("nickname", nickname)
+            .signWith(privateKey)
+            .compact()
+    }
+
     fun getClaimsWithVerify(idToken: String): Claims? {
         try {
             val publicKey = loadRsaPublicKey()

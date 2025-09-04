@@ -38,7 +38,7 @@ class UserOidcProvision(
             userId: Long,
             projectId: Long
         ): UserOidcProvision {
-            val code = UUID.randomUUID().toString().replace("-", "")
+            val code = "${userId}-${UUID.randomUUID().toString().replace("-", "")}"
 
             return UserOidcProvision(
                 userId = userId,
@@ -53,11 +53,19 @@ class UserOidcProvision(
         return this.status == OidcProvisionStatus.ACTIVE
     }
 
+    fun isCodeUsed(): Boolean {
+        return this.status != OidcProvisionStatus.WAITING
+    }
+
     fun waitForAuthenticated() {
         if (this.isActive()) {
             throw BaseException(ErrorCode.INVALID_REQUEST, "Already active provision")
         }
 
         this.status = OidcProvisionStatus.WAITING
+    }
+
+    fun activate() {
+        this.status = OidcProvisionStatus.ACTIVE
     }
 }
