@@ -1,7 +1,7 @@
 package com.devjk.penguin.service
 
-import com.devjk.penguin.db.entity.OidcUser
-import com.devjk.penguin.db.repository.OidcUserRepository
+import com.devjk.penguin.db.entity.OidcProject
+import com.devjk.penguin.db.repository.OidcProjectRepository
 import com.devjk.penguin.domain.oidc.AuthUser
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProjectService(
-    private val oidcUserRepository: OidcUserRepository,
+    private val oidcProjectRepository: OidcProjectRepository,
 ) {
 
     fun getUserOidcProjects(
         user: AuthUser
-    ): List<OidcUser> {
+    ): List<OidcProject> {
         return if (user.authenticated()) {
-            oidcUserRepository.findByOwnerId(user.id)
+            oidcProjectRepository.findByOwnerId(user.id)
         } else {
             emptyList()
         }
@@ -25,8 +25,8 @@ class ProjectService(
     fun getUserOidcProject(
         user: AuthUser,
         oidcId: Long
-    ): OidcUser {
-        return oidcUserRepository.findByIdAndOwnerId(oidcId, user.id)
+    ): OidcProject {
+        return oidcProjectRepository.findByIdAndOwnerId(oidcId, user.id)
             ?: throw BaseException(ErrorCode.OIDC_PROJECT_NOT_FOUND, "접근할 수 없습니다.")
     }
 
@@ -34,14 +34,14 @@ class ProjectService(
         user: AuthUser,
         projectName: String,
         redirectUris: List<String>
-    ): Pair<OidcUser, String> {
-        val oidcUser = OidcUser.create(projectName, redirectUris, user.id)
+    ): Pair<OidcProject, String> {
+        val oidcProject = OidcProject.create(projectName, redirectUris, user.id)
 
-        oidcUserRepository.findByOwnerIdAndProjectName(user.id, projectName)?.let {
+        oidcProjectRepository.findByOwnerIdAndProjectName(user.id, projectName)?.let {
             throw BaseException(ErrorCode.OIDC_PROJECT_ALREADY_EXISTS, "이미 같은 이름의 프로젝트가 있어요")
         }
 
-        val savedUser = oidcUserRepository.save(oidcUser.first)
-        return Pair(savedUser, oidcUser.second)
+        val savedUser = oidcProjectRepository.save(oidcProject.first)
+        return Pair(savedUser, oidcProject.second)
     }
 }

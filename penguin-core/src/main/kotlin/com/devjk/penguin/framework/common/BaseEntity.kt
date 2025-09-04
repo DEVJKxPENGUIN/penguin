@@ -17,5 +17,5 @@ abstract class BaseEntity {
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    val modifiedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null
 }

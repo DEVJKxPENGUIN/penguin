@@ -1,15 +1,17 @@
 package com.devjk.penguin.db.entity
 
 import com.devjk.penguin.framework.common.BaseEntity
+import com.devjk.penguin.framework.error.ErrorCode
+import com.devjk.penguin.framework.error.exception.BaseException
 import jakarta.persistence.*
 import org.apache.commons.lang3.RandomStringUtils
 import java.io.Serializable
 import java.security.MessageDigest
 
 @Entity
-@Table(name = "\"oidc_user\"")
+@Table(name = "\"oidc_project\"")
 @EntityListeners
-class OidcUser(
+class OidcProject(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,25 +37,19 @@ class OidcUser(
 ) : BaseEntity(), Serializable {
 
     companion object {
-
         fun create(
             projectName: String,
             redirectUris: List<String>,
             ownerId: Long,
-        ): Pair<OidcUser, String> {
+        ): Pair<OidcProject, String> {
             val clientId = "penguin-${
                 RandomStringUtils.secure().nextAlphanumeric(10)
             }-${System.currentTimeMillis()}"
             val clientSecret = RandomStringUtils.secure().nextAlphanumeric(32)
-            val clientSecretHashed = MessageDigest.getInstance("SHA-256").apply {
-                update(clientSecret.toByteArray())
-            }.digest().joinToString("") {
-                "%02x".format(it)
-            }
 
-            val oidc = OidcUser(
+            val oidc = OidcProject(
                 clientId = clientId,
-                clientSecret = clientSecretHashed,
+                clientSecret = this.hash(clientSecret),
                 projectName = projectName,
                 ownerId = ownerId,
                 redirectUris = redirectUris.joinToString(",")
@@ -62,7 +58,28 @@ class OidcUser(
             return Pair(oidc, clientSecret)
         }
 
-
+        private fun hash(clientSecret: String): String {
+            return MessageDigest.getInstance("SHA-256").apply {
+                update(clientSecret.toByteArray())
+            }.digest().joinToString("") {
+                "%02x".format(it)
+            }
+        }
     }
 
+    fun isNotMatchedUser(redirectUri: String, scope: String): Boolean {
+        val uri = if (redirectUri.contains("://")) {
+            redirectUri.substring(redirectUri.indexOf("://") + 3)
+        } else {
+            redirectUri
+        }
+
+        return !(redirectUris.split(",").contains(uri) && scopes.split(",").contains(scope))
+    }
+
+    fun checkMatchedClient(clientId: String, clientSecret: String) {
+        if (!(this.clientId == clientId && this.clientSecret == hash(clientSecret))) {
+            throw BaseException(ErrorCode.INVALID_OIDC_CLIENT, "Invalid clientId or clientSecret")
+        }
+    }
 }

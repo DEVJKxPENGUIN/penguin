@@ -1,3 +1,14 @@
 GET http://localhost:8081
 Authorization: Bearer eyJpZCI6MSwibmlja05hbWUiOiJkZXZqayIsImVtYWlsIjoiZGZqdW5nNDI1NEBnbWFpbC5jb20iLCJsYXN0TG9naW5BdCI6WzIwMjQsOSwxOCwyMiw1LDUsMjQwOTU1MDAwXX0=
 
+
+###
+
+POST http://localhost:8081/oauth2/token
+Content-Type: application/json
+
+{
+  "client_id": "penguin-4km6PQ6zJs-1756444375751",
+  "client_secret": "ZuDiSL7giJJNEQoPgtSAQRDVyXAYfXfQ",
+  "code": "1-80a6dfca7bf64c4492334957cf69222e"
+}
