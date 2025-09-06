@@ -9,6 +9,7 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
+    id("com.epages.restdocs-api-spec") version "0.19.2"
 }
 
 java {
@@ -32,6 +33,7 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-spring") //all-open
     apply(plugin = "kotlin-jpa")
+    apply(plugin = "com.epages.restdocs-api-spec")
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -56,6 +58,8 @@ subprojects {
         testImplementation("com.github.codemonstur:embedded-redis:1.4.2")
         testImplementation("org.assertj:assertj-core:3.27.3")
         testImplementation("org.mockito:mockito-inline:4.11.0")
+        testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+        testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
         implementation("com.mysql:mysql-connector-j:9.0.0")
     }
 

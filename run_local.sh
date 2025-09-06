@@ -83,6 +83,9 @@ while (("$#")); do
   if [ "-test" = $1 ]; then
     GRADLE_TASK=test
   fi
+  if [ "-openapi" = $1 ]; then
+    GRADLE_TASK=openapi3
+  fi
   if [ "-summary" = $1 ]; then
     EXTRA=" -Psummary=true"
   fi
@@ -107,7 +110,7 @@ if [ ${RUN_TYPE} = "spring" ]; then
   # make full args
   # shellcheck disable=SC2089
   FULL_ARGS="./gradlew ${CLEAN} $RUN_MODULE:$GRADLE_TASK ${ARGS} --args='--spring.profiles.active=${MODE}'"
-  if [ "${GRADLE_TASK}" = "test" ]; then
+  if [ "${GRADLE_TASK}" = "test" ] || [ "${GRADLE_TASK}" = "openapi3" ]; then
     FULL_ARGS="./gradlew ${CLEAN} $RUN_MODULE:$GRADLE_TASK ${ARGS}"
   fi
 
