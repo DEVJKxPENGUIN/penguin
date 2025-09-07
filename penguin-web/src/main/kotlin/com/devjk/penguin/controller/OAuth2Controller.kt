@@ -86,7 +86,6 @@ class OAuth2Controller(
         return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.USER_DENIED)
     }
 
-    // fixme --> 이 api 검증중이었음.
     @ResponseBody
     @PostMapping("/token")
     fun token(

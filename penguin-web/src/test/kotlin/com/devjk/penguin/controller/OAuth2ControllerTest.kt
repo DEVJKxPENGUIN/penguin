@@ -4,18 +4,18 @@ import com.devjk.penguin.PenguinWebTester
 import com.devjk.penguin.db.entity.UserOidcProvision
 import com.devjk.penguin.domain.oidc.OidcProvisionStatus
 import com.devjk.penguin.framework.error.ErrorCode
+import com.epages.restdocs.apispec.HeaderDescriptorWithType
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
+import com.epages.restdocs.apispec.Schema
+import com.epages.restdocs.apispec.SimpleType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
-import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -27,7 +27,8 @@ class OAuth2ControllerTest : PenguinWebTester() {
 
     @BeforeEach
     fun setupLogin() {
-        userToken = jwtHelper.create(testUser.id, testUser.email!!, testUser.role.name, testUser.nickName)
+        userToken =
+            jwtHelper.create(testUser.id, testUser.email!!, testUser.role.name, testUser.nickName)
     }
 
     @Test
@@ -47,17 +48,18 @@ class OAuth2ControllerTest : PenguinWebTester() {
             .andExpect(model().attribute("projectName", testOidcProject.projectName))
             .andDo(
                 document(
-                    "authorize-success-first-time",
+                    "성공",
                     resource(
                         ResourceSnippetParameters.builder()
-                            .summary("Request for user consent")
-                            .description("If the user has not yet agreed to provide information, the consent page is displayed.")
+                            .summary("사용자 정보 제공 동의 요청")
+                            .description("사용자가 아직 정보 제공에 동의하지 않은 경우, 동의 페이지를 보여줘요.")
                             .queryParameters(
                                 parameterWithName("clientId").description("Client ID"),
                                 parameterWithName("redirectUri").description("Redirect URI"),
                                 parameterWithName("scope").description("Scope"),
                                 parameterWithName("state").description("State")
                             )
+                            .responseSchema(Schema.schema("동의 화면 페이지"))
                             .build()
                     )
                 )
@@ -89,26 +91,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
         )
             .andExpect(status().is3xxRedirection)
             .andExpect(redirectedUrl("http://localhost:8081/oauth2/consent/agree"))
-            .andDo(
-                document(
-                    "authorize-success-already-provided",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("Request for user consent (already provided)")
-                            .description("If the user has already agreed to provide information, they are redirected to the consent/agree endpoint.")
-                            .queryParameters(
-                                parameterWithName("clientId").description("Client ID"),
-                                parameterWithName("redirectUri").description("Redirect URI"),
-                                parameterWithName("scope").description("Scope"),
-                                parameterWithName("state").description("State")
-                            )
-                            .responseHeaders(
-                                headerWithName("Location").description("Redirect URL to /oauth2/consent/agree")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
@@ -125,23 +107,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
                 .session(session)
         )
             .andExpect(status().isBadRequest)
-            .andDo(
-                document(
-                    "authorize-fail-invalid-client-id",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("Request for user consent (invalid client ID)")
-                            .description("Fails if the provided client ID does not exist.")
-                            .queryParameters(
-                                parameterWithName("clientId").description("Invalid Client ID"),
-                                parameterWithName("redirectUri").description("Redirect URI"),
-                                parameterWithName("scope").description("Scope"),
-                                parameterWithName("state").description("State")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
@@ -158,23 +123,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
                 .session(session)
         )
             .andExpect(status().isBadRequest)
-            .andDo(
-                document(
-                    "authorize-fail-invalid-redirect-uri",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("Request for user consent (invalid redirect URI)")
-                            .description("Fails if the provided redirect URI does not match the registered one.")
-                            .queryParameters(
-                                parameterWithName("clientId").description("Client ID"),
-                                parameterWithName("redirectUri").description("Invalid Redirect URI"),
-                                parameterWithName("scope").description("Scope"),
-                                parameterWithName("state").description("State")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
@@ -228,7 +176,8 @@ class OAuth2ControllerTest : PenguinWebTester() {
             .andExpect(redirectedUrlPattern("$redirectUri?status=0&message=ok&code=*&state=test-state"))
 
         // then
-        val provision = userOidcProvisionRepository.findByUserIdAndProjectId(testUser.id, testOidcProject.id)
+        val provision =
+            userOidcProvisionRepository.findByUserIdAndProjectId(testUser.id, testOidcProject.id)
         assert(provision != null)
     }
 
@@ -259,7 +208,12 @@ class OAuth2ControllerTest : PenguinWebTester() {
                 .session(session)
         )
             .andExpect(status().is3xxRedirection)
-            .andExpect(header().string("Location", "$redirectUri?status=-1&message=already%20provided"))
+            .andExpect(
+                header().string(
+                    "Location",
+                    "$redirectUri?status=-1&message=already%20provided"
+                )
+            )
     }
 
     @Test
@@ -332,11 +286,11 @@ class OAuth2ControllerTest : PenguinWebTester() {
             .andExpect(jsonPath("$.access_token").exists())
             .andDo(
                 document(
-                    "token-success",
+                    "성공",
                     resource(
                         ResourceSnippetParameters.builder()
-                            .summary("Get access_token and id_token")
-                            .description("Get access_token and id_token with authorization code")
+                            .summary("토큰 발급")
+                            .description("인증 코드를 사용하여 access_token과 id_token을 발급받아요.")
                             .requestFields(
                                 fieldWithPath("client_id").description("Client ID"),
                                 fieldWithPath("client_secret").description("Client Secret"),
@@ -361,7 +315,7 @@ class OAuth2ControllerTest : PenguinWebTester() {
         val request = TokenRequest(
             clientId = testOidcProject.clientId,
             clientSecret = testClientSecret,
-            code = "invalid-code"
+            code = "${testUser.id}-invalid-code"
         )
 
         // when & then
@@ -370,7 +324,7 @@ class OAuth2ControllerTest : PenguinWebTester() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request))
         )
-            .andExpect(status().isInternalServerError)
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -394,26 +348,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.error").value(ErrorCode.INVALID_OIDC_CLIENT.value))
-            .andDo(
-                document(
-                    "token-fail-invalid-client-secret",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("Token issuance failure (invalid client secret)")
-                            .description("Fails if the provided client secret is incorrect.")
-                            .requestFields(
-                                fieldWithPath("client_id").description("Client ID"),
-                                fieldWithPath("client_secret").description("Invalid Client Secret"),
-                                fieldWithPath("code").description("Authorization Code")
-                            )
-                            .responseFields(
-                                fieldWithPath("error").description("Error code"),
-                                fieldWithPath("error_description").description("Error description")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
@@ -463,25 +397,5 @@ class OAuth2ControllerTest : PenguinWebTester() {
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.error").value(ErrorCode.INVALID_REQUEST.value))
-            .andDo(
-                document(
-                    "token-fail-code-already-used",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("Token issuance failure (code already used)")
-                            .description("Fails if the provided authorization code has already been used.")
-                            .requestFields(
-                                fieldWithPath("client_id").description("Client ID"),
-                                fieldWithPath("client_secret").description("Client Secret"),
-                                fieldWithPath("code").description("Used Authorization Code")
-                            )
-                            .responseFields(
-                                fieldWithPath("error").description("Error code"),
-                                fieldWithPath("error_description").description("Error description")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 }

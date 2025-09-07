@@ -52,6 +52,7 @@ subprojects {
         developmentOnly("org.springframework.boot:spring-boot-devtools")
         implementation("com.google.code.gson:gson")
         implementation("org.apache.commons:commons-lang3")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("com.h2database:h2")
