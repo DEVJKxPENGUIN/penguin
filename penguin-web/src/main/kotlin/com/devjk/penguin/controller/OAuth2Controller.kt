@@ -9,6 +9,7 @@ import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.OAuth2Service
 import com.devjk.penguin.utils.UrlUtils
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank

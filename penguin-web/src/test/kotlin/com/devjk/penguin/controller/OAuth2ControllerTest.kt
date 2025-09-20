@@ -4,18 +4,10 @@ import com.devjk.penguin.PenguinWebTester
 import com.devjk.penguin.db.entity.UserOidcProvision
 import com.devjk.penguin.domain.oidc.OidcProvisionStatus
 import com.devjk.penguin.framework.error.ErrorCode
-import com.epages.restdocs.apispec.HeaderDescriptorWithType
-import com.epages.restdocs.apispec.ResourceDocumentation.resource
-import com.epages.restdocs.apispec.ResourceSnippetParameters
-import com.epages.restdocs.apispec.Schema
-import com.epages.restdocs.apispec.SimpleType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
-import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -46,24 +38,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
             .andExpect(status().isOk)
             .andExpect(view().name("consent"))
             .andExpect(model().attribute("projectName", testOidcProject.projectName))
-            .andDo(
-                document(
-                    "성공",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("사용자 정보 제공 동의 요청")
-                            .description("사용자가 아직 정보 제공에 동의하지 않은 경우, 동의 페이지를 보여줘요.")
-                            .queryParameters(
-                                parameterWithName("clientId").description("Client ID"),
-                                parameterWithName("redirectUri").description("Redirect URI"),
-                                parameterWithName("scope").description("Scope"),
-                                parameterWithName("state").description("State")
-                            )
-                            .responseSchema(Schema.schema("동의 화면 페이지"))
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
@@ -284,28 +258,6 @@ class OAuth2ControllerTest : PenguinWebTester() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id_token").exists())
             .andExpect(jsonPath("$.access_token").exists())
-            .andDo(
-                document(
-                    "성공",
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .summary("토큰 발급")
-                            .description("인증 코드를 사용하여 access_token과 id_token을 발급받아요.")
-                            .requestFields(
-                                fieldWithPath("client_id").description("Client ID"),
-                                fieldWithPath("client_secret").description("Client Secret"),
-                                fieldWithPath("code").description("Authorization Code")
-                            )
-                            .responseFields(
-                                fieldWithPath("id_token").description("ID Token"),
-                                fieldWithPath("access_token").description("Access Token"),
-                                fieldWithPath("token_type").description("Token Type"),
-                                fieldWithPath("expires_in").description("Expires In")
-                            )
-                            .build()
-                    )
-                )
-            )
     }
 
     @Test
