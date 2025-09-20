@@ -9,6 +9,7 @@ import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.OAuth2Service
 import com.devjk.penguin.utils.UrlUtils
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -86,7 +87,6 @@ class OAuth2Controller(
         return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.USER_DENIED)
     }
 
-    // fixme --> 이 api 검증중이었음.
     @ResponseBody
     @PostMapping("/token")
     fun token(

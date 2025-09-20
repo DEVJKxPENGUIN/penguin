@@ -1,8 +1,8 @@
-plugins {
-
+tasks.getByName("bootJar") {
+    enabled = true
 }
 
 dependencies {
-    // 필요한 의존성 추가
+    implementation(project(":penguin-core"))
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
