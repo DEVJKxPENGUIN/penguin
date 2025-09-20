@@ -12,15 +12,11 @@ import com.devjk.penguin.utils.JwtHelper
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.mock.web.MockHttpSession
-import org.springframework.restdocs.RestDocumentationContextProvider
-import org.springframework.restdocs.RestDocumentationExtension
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -31,7 +27,6 @@ import java.security.MessageDigest
 @SpringBootTest
 @Import(TestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-@ExtendWith(RestDocumentationExtension::class)
 class PenguinWebTester {
 
     @Autowired
@@ -61,11 +56,9 @@ class PenguinWebTester {
     @BeforeEach
     fun setup(
         webApplicationContext: WebApplicationContext,
-        restDocumentation: RestDocumentationContextProvider
     ) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
             .addFilters<DefaultMockMvcBuilder>(CharacterEncodingFilter("UTF-8", true))
-            .apply<DefaultMockMvcBuilder>(MockMvcRestDocumentation.documentationConfiguration(restDocumentation))
             .build()
 
         testUser = createTestUser(
