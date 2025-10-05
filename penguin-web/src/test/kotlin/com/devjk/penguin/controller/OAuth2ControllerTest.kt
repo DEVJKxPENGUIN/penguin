@@ -182,12 +182,7 @@ class OAuth2ControllerTest : PenguinWebTester() {
                 .session(session)
         )
             .andExpect(status().is3xxRedirection)
-            .andExpect(
-                header().string(
-                    "Location",
-                    "$redirectUri?status=-1&message=already%20provided"
-                )
-            )
+            .andExpect(redirectedUrlPattern("$redirectUri?status=0&message=ok&code=*&state=test-state"))
     }
 
     @Test
@@ -240,13 +235,28 @@ class OAuth2ControllerTest : PenguinWebTester() {
     @DisplayName("[TOKEN-001] 성공: 유효한 code로 토큰 발급")
     fun tokenSuccess() {
         // given
-        val provision = UserOidcProvision.create(testUser.id, testOidcProject.id)
-        userOidcProvisionRepository.save(provision)
+        session.setAttribute(
+            "authorize", OAuth2AuthorizeRequest(
+                clientId = testOidcProject.clientId,
+                redirectUri = redirectUri,
+                scope = "openid",
+                state = "test-state"
+            )
+        )
+        val redirectUri = mockMvc.perform(
+            get("/oauth2/consent/agree")
+                .header("Authorization", "Bearer $userToken")
+                .session(session)
+        ).andReturn().response.redirectedUrl
+
+        val code = redirectUri?.substringAfter("code=")
+            ?.substringBefore("&")
+            .also { println("Extracted code: $it") }
 
         val request = TokenRequest(
             clientId = testOidcProject.clientId,
             clientSecret = testClientSecret,
-            code = provision.code
+            code = code
         )
 
         // when & then
@@ -283,13 +293,28 @@ class OAuth2ControllerTest : PenguinWebTester() {
     @DisplayName("[TOKEN-003] 실패: clientSecret이 일치하지 않는 경우")
     fun tokenFailInvalidClientSecret() {
         // given
-        val provision = UserOidcProvision.create(testUser.id, testOidcProject.id)
-        userOidcProvisionRepository.save(provision)
+        session.setAttribute(
+            "authorize", OAuth2AuthorizeRequest(
+                clientId = testOidcProject.clientId,
+                redirectUri = redirectUri,
+                scope = "openid",
+                state = "test-state"
+            )
+        )
+        val redirectUri = mockMvc.perform(
+            get("/oauth2/consent/agree")
+                .header("Authorization", "Bearer $userToken")
+                .session(session)
+        ).andReturn().response.redirectedUrl
+
+        val code = redirectUri?.substringAfter("code=")
+            ?.substringBefore("&")
+            .also { println("Extracted code: $it") }
 
         val request = TokenRequest(
             clientId = testOidcProject.clientId,
             clientSecret = "invalid-secret",
-            code = provision.code
+            code = code
         )
 
         // when & then
@@ -324,13 +349,28 @@ class OAuth2ControllerTest : PenguinWebTester() {
     @DisplayName("[TOKEN-005] 실패: 이미 사용된 code를 재사용하는 경우")
     fun tokenFailCodeAlreadyUsed() {
         // given
-        val provision = UserOidcProvision.create(testUser.id, testOidcProject.id)
-        userOidcProvisionRepository.save(provision)
+        session.setAttribute(
+            "authorize", OAuth2AuthorizeRequest(
+                clientId = testOidcProject.clientId,
+                redirectUri = redirectUri,
+                scope = "openid",
+                state = "test-state"
+            )
+        )
+        val redirectUri = mockMvc.perform(
+            get("/oauth2/consent/agree")
+                .header("Authorization", "Bearer $userToken")
+                .session(session)
+        ).andReturn().response.redirectedUrl
+
+        val code = redirectUri?.substringAfter("code=")
+            ?.substringBefore("&")
+            .also { println("Extracted code: $it") }
 
         val request = TokenRequest(
             clientId = testOidcProject.clientId,
             clientSecret = testClientSecret,
-            code = provision.code
+            code = code
         )
 
         // first call - success
