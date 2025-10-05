@@ -1,7 +1,7 @@
 package com.devjk.penguin.domain.oidc
 
 import com.devjk.penguin.external.GoogleApiHelper
-import com.devjk.penguin.utils.JsonHelper
+import com.devjk.penguin.utils.JsonUtils
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -18,7 +18,7 @@ class GoogleConnector(
         return googleApiHelper.verifyOAuthCode(code)?.let {
             val encodedPayload = it.idToken.split(".")[1]
             val payload = String(Base64.getUrlDecoder().decode(encodedPayload))
-            val payloadMap = JsonHelper.fromJson(payload, Map::class.java)
+            val payloadMap = JsonUtils.fromJson(payload, Map::class.java)
             val sub = payloadMap["sub"] as String
             val email = payloadMap["email"] as String
             return ProviderUserInfo(sub, email)

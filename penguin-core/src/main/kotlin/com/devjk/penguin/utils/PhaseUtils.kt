@@ -2,7 +2,7 @@ package com.devjk.penguin.utils
 
 import com.devjk.penguin.framework.custom.ApplicationContextProvider
 
-class Profiles {
+class PhaseUtils {
 
     companion object {
         fun isLocal(): Boolean {

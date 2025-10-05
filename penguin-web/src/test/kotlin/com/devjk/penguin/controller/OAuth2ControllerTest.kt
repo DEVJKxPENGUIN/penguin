@@ -20,7 +20,7 @@ class OAuth2ControllerTest : PenguinWebTester() {
     @BeforeEach
     fun setupLogin() {
         userToken =
-            jwtHelper.create(testUser.id, testUser.email!!, testUser.role.name, testUser.nickName)
+            jwtUtils.create(testUser.id, testUser.email!!, testUser.role.name, testUser.nickName)
     }
 
     @Test

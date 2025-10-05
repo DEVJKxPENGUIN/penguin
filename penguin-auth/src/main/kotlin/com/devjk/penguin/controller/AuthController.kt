@@ -7,7 +7,7 @@ import com.devjk.penguin.framework.common.BaseResponse
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.AuthService
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -86,7 +86,7 @@ class AuthController(
                     .status(HttpStatus.FOUND)
                     .header(
                         "Location",
-                        UrlUtils.userRegisterUrl(oidcProvider, signupState)
+                        HostUtils.userRegisterUrl(oidcProvider, signupState)
                     )
                     .body(BaseResponse.success())
             }
