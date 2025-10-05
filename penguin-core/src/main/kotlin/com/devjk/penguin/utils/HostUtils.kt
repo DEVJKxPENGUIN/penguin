@@ -4,7 +4,7 @@ import com.devjk.penguin.domain.oidc.OidcProvider
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-class UrlUtils {
+class HostUtils {
 
     companion object {
 
@@ -62,7 +62,7 @@ class UrlUtils {
         }
 
         fun serverAuth(): String {
-            return if (Profiles.isLocal()) {
+            return if (PhaseUtils.isLocal()) {
                 "http://localhost:8082"
             } else {
                 "https://auth.penguintribe.net"
@@ -70,7 +70,7 @@ class UrlUtils {
         }
 
         fun serverHome(): String {
-            return if (Profiles.isLocal()) {
+            return if (PhaseUtils.isLocal()) {
                 "http://localhost:8081"
             } else {
                 "https://penguintribe.net"

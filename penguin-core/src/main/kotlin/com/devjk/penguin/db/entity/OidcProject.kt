@@ -74,7 +74,15 @@ class OidcProject(
             redirectUri
         }
 
-        return !(redirectUris.split(",").contains(uri) && scopes.split(",").contains(scope))
+        return !(redirectUris.split(",")
+            .map {
+                if (it.contains("://")) {
+                    it.substring(it.indexOf("://") + 3)
+                } else {
+                    it
+                }
+            })
+            .contains(uri) && scopes.split(",").contains(scope)
     }
 
     fun checkMatchedClient(clientId: String, clientSecret: String) {

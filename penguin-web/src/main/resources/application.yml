@@ -43,11 +43,6 @@ management:
       show-details: always
       show-components: always
 
-springdoc:
-  swagger-ui:
-    url: /openapi3.yaml
-    path: /swagger-ui.html
-
 db-host: ${DB_HOST}
 db-username: ${DB_USERNAME}
 db-password: ${DB_PASSWORD}

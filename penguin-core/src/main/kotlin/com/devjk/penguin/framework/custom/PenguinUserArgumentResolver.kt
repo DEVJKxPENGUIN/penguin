@@ -5,8 +5,8 @@ import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
-import com.devjk.penguin.utils.JwtHelper
-import com.devjk.penguin.utils.Profiles
+import com.devjk.penguin.utils.JwtUtils
+import com.devjk.penguin.utils.PhaseUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.core.MethodParameter
@@ -25,7 +25,7 @@ import java.util.function.Predicate
 @Component
 class PenguinUserArgumentResolver(
     private val request: HttpServletRequest,
-    private val jwtHelper: JwtHelper,
+    private val jwtUtils: JwtUtils,
     private val webClient: WebClient,
     private val httpServletResponse: HttpServletResponse
 ) : HandlerMethodArgumentResolver {
@@ -44,7 +44,7 @@ class PenguinUserArgumentResolver(
         val idToken = getAuthorizationHeader()
         var user = AuthUser.ofGuest()
         if (!idToken.isNullOrBlank()) {
-            val claims = jwtHelper.getClaimsWithVerify(idToken)
+            val claims = jwtUtils.getClaimsWithVerify(idToken)
             claims?.let {
                 val id = it.subject.toLong()
                 val email = it["email"] as String
@@ -56,7 +56,7 @@ class PenguinUserArgumentResolver(
 
         if (!user.hasRole(annotation.min)) {
 
-            if(annotation.redirectLoginPage) {
+            if(annotation.redirectLoginPage && user.isGuest()) {
                 val response = webRequest.getNativeResponse(HttpServletResponse::class.java)
                 val request = webRequest.getNativeRequest(HttpServletRequest::class.java)
 
@@ -92,7 +92,7 @@ class PenguinUserArgumentResolver(
 
     private fun getFromPenguinAuth(): String? {
         val sessionCookie = request.cookies?.find { it.name == "devjksession" }
-        return if (Profiles.isLocal()) {
+        return if (PhaseUtils.isLocal()) {
             val authCallResponse = webClient.get()
                 .uri("http://localhost:8082/auth")
                 .cookie("devjksession", sessionCookie?.value ?: "")

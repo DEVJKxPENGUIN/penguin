@@ -3,7 +3,7 @@ package com.devjk.penguin.controller
 import com.devjk.penguin.domain.oidc.AuthUser
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,14 +20,14 @@ class LoginController {
         model: Model
     ): String {
         if (user.authenticated()) {
-            return "redirect:${rd ?: UrlUtils.serverHome()}"
+            return "redirect:${rd ?: HostUtils.serverHome()}"
         }
 
         model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히는 일해요!")
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
-        model.addAttribute("googleLoginUrl", UrlUtils.startOidcProviderUrl("google", rd))
-        model.addAttribute("githubLoginUrl", UrlUtils.startOidcProviderUrl("github", rd))
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
+        model.addAttribute("googleLoginUrl", HostUtils.startOidcProviderUrl("google", rd))
+        model.addAttribute("githubLoginUrl", HostUtils.startOidcProviderUrl("github", rd))
         return "login"
     }
 
@@ -40,14 +40,14 @@ class LoginController {
         model: Model
     ): String {
         if (user.authenticated()) {
-            return "redirect:${rd ?: UrlUtils.serverHome()}"
+            return "redirect:${rd ?: HostUtils.serverHome()}"
         }
 
         model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히는 일해요!")
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
         model.addAttribute("provider", provider)
-        model.addAttribute("signupUrl", UrlUtils.signupUrl())
+        model.addAttribute("signupUrl", HostUtils.signupUrl())
         model.addAttribute("state", state)
         return "register"
     }

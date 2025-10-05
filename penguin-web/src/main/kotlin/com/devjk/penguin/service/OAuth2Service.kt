@@ -13,7 +13,7 @@ import com.devjk.penguin.domain.oidc.AuthUser
 import com.devjk.penguin.domain.oidc.OidcProvisionStatus
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
-import com.devjk.penguin.utils.JwtHelper
+import com.devjk.penguin.utils.JwtUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.util.UriComponentsBuilder
@@ -23,7 +23,7 @@ class OAuth2Service(
     private val oidcProjectRepository: OidcProjectRepository,
     private val userOidcProvisionRepository: UserOidcProvisionRepository,
     private val userRepository: UserRepository,
-    private val jwtHelper: JwtHelper
+    private val jwtUtils: JwtUtils
 ) {
 
     fun createOidcProvide(request: OAuth2AuthorizeRequest, user: AuthUser): String {
@@ -34,10 +34,10 @@ class OAuth2Service(
             oidcProject.id
         ) ?: UserOidcProvision.create(user.id, oidcProject.id)
 
-        oidcProvision.waitForAuthenticated()
+        oidcProvision.renewCode()
         userOidcProvisionRepository.save(oidcProvision)
 
-        return oidcProvision.code
+        return oidcProvision.code!!
     }
 
     fun getMatchedOidcProject(request: OAuth2AuthorizeRequest): OidcProject {
@@ -89,7 +89,7 @@ class OAuth2Service(
                 throw BaseException(ErrorCode.USER_NOT_FOUND, "User not found")
             }
 
-        val idToken = jwtHelper.createIdToken(
+        val idToken = jwtUtils.createIdToken(
             id = user.id,
             email = user.email,
             nickname = user.nickName,
@@ -110,10 +110,6 @@ class OAuth2Service(
             .orElseThrow {
                 throw BaseException(ErrorCode.OIDC_PROJECT_NOT_FOUND, "Invalid OIDC project")
             }
-
-        if (oidcProvision.isCodeUsed()) {
-            throw BaseException(ErrorCode.INVALID_REQUEST, "Code already used")
-        }
 
         oidcProject.checkMatchedClient(request.clientId!!, request.clientSecret!!)
 
