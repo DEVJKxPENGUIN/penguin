@@ -2,8 +2,6 @@ package com.devjk.penguin.db.entity
 
 import com.devjk.penguin.domain.oidc.OidcProvisionStatus
 import com.devjk.penguin.framework.common.BaseEntity
-import com.devjk.penguin.framework.error.ErrorCode
-import com.devjk.penguin.framework.error.exception.BaseException
 import jakarta.persistence.*
 import java.io.Serializable
 import java.util.*
@@ -25,11 +23,11 @@ class UserOidcProvision(
     val projectId: Long,
 
     @Column(name = "code")
-    val code: String,
+    var code: String? = null,
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    var status: OidcProvisionStatus
+    var status: OidcProvisionStatus = OidcProvisionStatus.WAITING
 
 ) : BaseEntity(), Serializable {
 
@@ -38,13 +36,10 @@ class UserOidcProvision(
             userId: Long,
             projectId: Long
         ): UserOidcProvision {
-            val code = "${userId}-${UUID.randomUUID().toString().replace("-", "")}"
 
             return UserOidcProvision(
                 userId = userId,
                 projectId = projectId,
-                code = code,
-                status = OidcProvisionStatus.WAITING
             )
         }
     }
@@ -53,19 +48,12 @@ class UserOidcProvision(
         return this.status == OidcProvisionStatus.ACTIVE
     }
 
-    fun isCodeUsed(): Boolean {
-        return this.status != OidcProvisionStatus.WAITING
-    }
-
-    fun waitForAuthenticated() {
-        if (this.isActive()) {
-            throw BaseException(ErrorCode.INVALID_REQUEST, "Already active provision")
-        }
-
-        this.status = OidcProvisionStatus.WAITING
+    fun renewCode() {
+        this.code = "${this.userId}-${UUID.randomUUID().toString().replace("-", "")}"
     }
 
     fun activate() {
+        this.code = null
         this.status = OidcProvisionStatus.ACTIVE
     }
 }

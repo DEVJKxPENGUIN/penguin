@@ -4,7 +4,7 @@ import com.devjk.penguin.domain.oidc.AuthUser
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.service.ProjectService
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,10 +29,10 @@ class WelcomeController(
         }
 
         model.addAttribute("oidcs", projectService.getUserOidcProjects(user))
-        model.addAttribute("loginUrl", UrlUtils.loginUrl())
-        model.addAttribute("logoutUrl", UrlUtils.logoutUrl() + "?rd=" + UrlUtils.serverHome())
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
-        model.addAttribute("projectStartUrl", UrlUtils.projectStartUrl())
+        model.addAttribute("loginUrl", HostUtils.loginUrl())
+        model.addAttribute("logoutUrl", HostUtils.logoutUrl() + "?rd=" + HostUtils.serverHome())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
+        model.addAttribute("projectStartUrl", HostUtils.projectStartUrl())
         return "index"
     }
 
@@ -53,9 +53,9 @@ class WelcomeController(
             model.addAttribute("user", AuthUser.ofGuest())
         }
 
-        model.addAttribute("loginUrl", UrlUtils.loginUrl())
-        model.addAttribute("logoutUrl", UrlUtils.logoutUrl() + "?rd=" + UrlUtils.serverHome())
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
+        model.addAttribute("loginUrl", HostUtils.loginUrl())
+        model.addAttribute("logoutUrl", HostUtils.logoutUrl() + "?rd=" + HostUtils.serverHome())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
         return "errors"
     }
 }

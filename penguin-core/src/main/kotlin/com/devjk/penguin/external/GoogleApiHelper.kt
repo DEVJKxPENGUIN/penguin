@@ -1,6 +1,6 @@
 package com.devjk.penguin.external
 
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -23,7 +23,7 @@ class GoogleApiHelper(
     private val GOOGLE_OAUTH_URL = "https://oauth2.googleapis.com"
 
     fun getGoogleLoginUrl(state: String): String {
-        val encodedRedirect = URLEncoder.encode(UrlUtils.redirectUrl(), StandardCharsets.UTF_8)
+        val encodedRedirect = URLEncoder.encode(HostUtils.redirectUrl(), StandardCharsets.UTF_8)
         val encodedState = URLEncoder.encode(state, StandardCharsets.UTF_8)
         val encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
 
@@ -44,7 +44,7 @@ class GoogleApiHelper(
                 BodyInserters.fromFormData("code", code)
                     .with("client_id", clientId)
                     .with("client_secret", clientSecret)
-                    .with("redirect_uri", UrlUtils.redirectUrl())
+                    .with("redirect_uri", HostUtils.redirectUrl())
                     .with("grant_type", "authorization_code")
             )
             .retrieve()

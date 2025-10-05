@@ -11,7 +11,7 @@ import com.devjk.penguin.domain.oidc.OidcProvider
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.external.GoogleOpenId
 import com.devjk.penguin.framework.error.ErrorCode
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -319,7 +319,7 @@ class AuthTest : PenguinAuthTester() {
         assertThat(authorization).startsWith("Bearer ")
         val jwt = authorization?.substring(7)
         assertThat(jwt).isNotBlank
-        val claims = jwtHelper.getClaimsWithVerify(jwt!!)
+        val claims = jwtUtils.getClaimsWithVerify(jwt!!)
         assertThat(claims).isNotNull
         assertThat(claims!!.subject).isEqualTo(testUser.id.toString())
         assertThat(claims["role"]).isEqualTo(testUser.role.toString())
@@ -378,7 +378,7 @@ class AuthTest : PenguinAuthTester() {
         val state = "test_state"
         val code = "test_code"
 
-        val expectedLocation = "${UrlUtils.serverHome()}/user/register"
+        val expectedLocation = "${HostUtils.serverHome()}/user/register"
 
         // unregistered@penguintribe.net
         val testIdToken =

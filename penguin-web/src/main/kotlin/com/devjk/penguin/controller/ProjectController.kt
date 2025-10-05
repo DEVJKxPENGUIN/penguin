@@ -6,7 +6,7 @@ import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.ProjectService
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,8 +28,8 @@ class ProjectController(
 
         model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히와 함께 프로젝트 시작해봐요!")
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
-        model.addAttribute("projectCreateUrl", UrlUtils.projectCreateUrl())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
+        model.addAttribute("projectCreateUrl", HostUtils.projectCreateUrl())
         return "project-start"
     }
 
@@ -52,9 +52,9 @@ class ProjectController(
             redirectAttributes.addFlashAttribute("clientSecret", clientSecret)
             redirectAttributes.addFlashAttribute("isCreated", true)
 
-            return "redirect:${UrlUtils.projectUrl(oidcUser.id)}"
+            return "redirect:${HostUtils.projectUrl(oidcUser.id)}"
         } catch (e: BaseException) {
-            return "redirect:${UrlUtils.errorUrl(e.detailMessage)}"
+            return "redirect:${HostUtils.errorUrl(e.detailMessage)}"
         }
     }
 
@@ -76,7 +76,7 @@ class ProjectController(
 
         model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히와 좋은 프로젝트 만들어봐요!")
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
         model.addAttribute("oidc", oidc)
         return "project"
     }

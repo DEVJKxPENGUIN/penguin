@@ -15,8 +15,8 @@ import com.devjk.penguin.domain.oidc.ProviderUserInfo
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
-import com.devjk.penguin.utils.JwtHelper
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.JwtUtils
+import com.devjk.penguin.utils.HostUtils
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -26,7 +26,7 @@ import java.security.SecureRandom
 @Service
 class AuthService(
     private val session: HttpSession,
-    private val jwtHelper: JwtHelper,
+    private val jwtUtils: JwtUtils,
     private val userRepository: UserRepository,
     private val connectorFactory: ConnectorFactory,
 ) {
@@ -61,7 +61,7 @@ class AuthService(
     }
 
     fun getRedirectSession(): String {
-        return (session.getAttribute(AUTH_REDIRECT) ?: UrlUtils.serverHome()) as String
+        return (session.getAttribute(AUTH_REDIRECT) ?: HostUtils.serverHome()) as String
     }
 
     fun getOidcProviderLink(provider: OidcProvider, state: String): String {
@@ -132,7 +132,7 @@ class AuthService(
     fun login(user: User): String {
         user.renewSession()
 
-        val jwt = jwtHelper.create(user.id, user.email, user.role.name, user.nickName)
+        val jwt = jwtUtils.create(user.id, user.email, user.role.name, user.nickName)
         user.idToken = jwt
         userRepository.save(user)
         session.setAttribute(AUTH_VALUE, user)

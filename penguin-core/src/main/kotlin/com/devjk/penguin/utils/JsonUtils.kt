@@ -3,7 +3,7 @@ package com.devjk.penguin.utils
 import com.devjk.penguin.framework.custom.ApplicationContextProvider
 import com.fasterxml.jackson.databind.ObjectMapper
 
-class JsonHelper {
+class JsonUtils {
 
     companion object {
 

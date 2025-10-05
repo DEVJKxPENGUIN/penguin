@@ -7,9 +7,8 @@ import com.devjk.penguin.framework.annotation.PenguinUser
 import com.devjk.penguin.framework.error.ErrorCode
 import com.devjk.penguin.framework.error.exception.BaseException
 import com.devjk.penguin.service.OAuth2Service
-import com.devjk.penguin.utils.UrlUtils
+import com.devjk.penguin.utils.HostUtils
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -39,14 +38,14 @@ class OAuth2Controller(
         session.setAttribute("authorize", request)
 
         if (oAuth2Service.alreadyProvided(user, oidc)) {
-            return "redirect:${UrlUtils.oauthConsentAgreeUrl()}"
+            return "redirect:${HostUtils.oauthConsentAgreeUrl()}"
         }
 
         model.addAttribute("title", "PenuingTribe in JJD [정자동 펭귄마을]")
         model.addAttribute("message", "또히는 일해요!")
-        model.addAttribute("serverHomeUrl", UrlUtils.serverHome())
-        model.addAttribute("agreeUrl", UrlUtils.oauthConsentAgreeUrl())
-        model.addAttribute("disagreeUrl", UrlUtils.oauthConsentDisagreeUrl())
+        model.addAttribute("serverHomeUrl", HostUtils.serverHome())
+        model.addAttribute("agreeUrl", HostUtils.oauthConsentAgreeUrl())
+        model.addAttribute("disagreeUrl", HostUtils.oauthConsentDisagreeUrl())
         model.addAttribute("projectName", oidc.projectName)
 
         return "consent"
@@ -62,11 +61,6 @@ class OAuth2Controller(
                 ErrorCode.INVALID_REQUEST,
                 "invalid access"
             )
-
-        val oidc = oAuth2Service.getMatchedOidcProject(request)
-        if (oAuth2Service.alreadyProvided(user, oidc)) {
-            return oAuth2Service.createRedirectUri(request, OAuth2AuthorizeStatus.ALREADY_PROVIDED)
-        }
 
         val code = oAuth2Service.createOidcProvide(request, user)
 
@@ -96,6 +90,7 @@ class OAuth2Controller(
             val response = oAuth2Service.provideOpenIdConnect(request)
             return ResponseEntity.ok(response)
         } catch (e: BaseException) {
+            e.printStackTrace()
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body<Any>(
                 mapOf(
                     "error" to e.errorCode.value,

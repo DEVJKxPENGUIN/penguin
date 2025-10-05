@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Component
-class JwtHelper(
+class JwtUtils(
     @Value("\${jwt-private-key}")
     private val privateKey: String,
     @Value("\${jwt-public-key}")
@@ -37,7 +37,7 @@ class JwtHelper(
             .claim("email", email)
             .claim("nickname", nickname)
             .claim("aud", AUD)
-            .claim("iss", UrlUtils.serverAuth())
+            .claim("iss", HostUtils.serverAuth())
             .claim("role", role)
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plus(1, ChronoUnit.HOURS)))
@@ -56,7 +56,7 @@ class JwtHelper(
             .and()
             .audience().add(clientId)
             .and()
-            .issuer(UrlUtils.serverHome())
+            .issuer(HostUtils.serverHome())
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plus(1, ChronoUnit.HOURS)))
             .claim("email", email)
@@ -101,17 +101,19 @@ class JwtHelper(
 
     fun getJwksN(): String {
         val publicKey = loadRsaPublicKey()
-        val nBytes = publicKey.modulus.toByteArray().let {
-            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
-        }
+        val nBytes = publicKey.modulus.toByteArray()
+            .let {
+                if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+            }
         return Base64.getUrlEncoder().withoutPadding().encodeToString(nBytes)
     }
 
     fun getJwksE(): String {
         val publicKey = loadRsaPublicKey()
-        val eBytes = publicKey.publicExponent.toByteArray().let {
-            if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
-        }
+        val eBytes = publicKey.publicExponent.toByteArray()
+            .let {
+                if (it[0] == 0.toByte()) it.drop(1).toByteArray() else it
+            }
         return Base64.getUrlEncoder().withoutPadding().encodeToString(eBytes)
     }
 }

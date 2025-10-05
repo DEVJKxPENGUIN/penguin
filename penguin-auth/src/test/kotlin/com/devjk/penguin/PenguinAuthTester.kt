@@ -7,7 +7,7 @@ import com.devjk.penguin.db.repository.UserRepository
 import com.devjk.penguin.domain.oidc.OidcProvider
 import com.devjk.penguin.domain.oidc.Role
 import com.devjk.penguin.external.GoogleApiHelper
-import com.devjk.penguin.utils.JwtHelper
+import com.devjk.penguin.utils.JwtUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -36,7 +36,7 @@ class PenguinAuthTester {
     lateinit var userRepository: UserRepository
 
     @Autowired
-    lateinit var jwtHelper: JwtHelper
+    lateinit var jwtUtils: JwtUtils
 
     @Autowired
     lateinit var mapper: ObjectMapper
@@ -80,7 +80,7 @@ class PenguinAuthTester {
                 role = role,
             )
         )
-        val jwt = jwtHelper.create(user.id, email, role.name, nickName)
+        val jwt = jwtUtils.create(user.id, email, role.name, nickName)
         user.idToken = jwt
         return user
     }
